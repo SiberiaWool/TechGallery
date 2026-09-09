@@ -32,45 +32,6 @@ tech-gallery/
 └── README.md
 ```
 
-## 新增一篇图解（两步）
-
-1. `demos/` 下新建文件夹（如 `demos/cpo-explainer/`），放入自包含的 `index.html`
-2. 主页 `index.html` 顶部 `REGISTRY` 数组加一条：
-
-```js
-{
-  id:'cpo-explainer',            // = 文件夹名
-  title:'CPO 共封装光学图解',
-  cat:'光通信 · 封装',
-  desc:'一句话摘要……',
-  date:'2026-09-10',
-  tech:['CPO','光引擎']
-}
-```
-
-卡片自动出现（缩略图为 iframe 实时渲染，非截图）。
-
-## 发布与更新
-
-```bash
-# 首次推送
-git init && git add . && git commit -m "init: tech gallery with 6d torus demo"
-git branch -M main
-git remote add origin https://github.com/<用户名>/tech-gallery.git
-git push -u origin main
-```
-
-然后仓库 **Settings → Pages → Deploy from a branch → main / (root) → Save**，约 1 分钟后 `https://<用户名>.github.io/tech-gallery/` 生效。此后每次 push 自动更新线上版本。
-
-也可以不走命令行：网页端 Add file → Upload files 拖入全部文件，同样有效。
-
-## 本地预览
-
-```bash
-python -m http.server 8000
-# 访问 http://localhost:8000
-```
-
 ## 已知约定
 
 - 所有图解内容为公开资料整理的技术推演，页面内标注口径与出处（如 6D Torus 为 SemiAnalysis 推演、谷歌未官宣）

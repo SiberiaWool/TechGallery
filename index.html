@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Tech Gallery · 技术图解馆</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#26215c; --ink2:#5f5e5a; --ink3:#888780;
+    --line:#d3d1c7; --teal:#0f6e56; --teal-l:#e1f5ee; --coral:#d85a30; --blue:#185fa5; --blue-l:#e6f1fb;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink);}
+  header{background:var(--panel); border-bottom:1px solid var(--line); padding:28px 36px 22px;}
+  header h1{font-size:20px; font-weight:600; letter-spacing:.5px;}
+  header p{font-size:13px; color:var(--ink2); margin-top:6px; line-height:1.7;}
+  header .tags{margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{font-size:11px; color:var(--ink3); border:1px solid var(--line); border-radius:12px; padding:2px 10px;}
+  main{max-width:1180px; margin:0 auto; padding:28px 36px 60px;}
+  #grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:18px;}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; cursor:pointer; transition:border-color .15s, transform .15s; display:flex; flex-direction:column;}
+  .card:hover{border-color:var(--teal); transform:translateY(-2px);}
+  .card .thumb{height:170px; background:#eef0f3; position:relative; overflow:hidden;}
+  .card .thumb iframe{width:200%; height:200%; border:0; transform:scale(.5); transform-origin:0 0; pointer-events:none;}
+  .card .thumb .veil{position:absolute; inset:0;}
+  .card .body{padding:14px 16px 16px; flex:1; display:flex; flex-direction:column;}
+  .card h2{font-size:15px; font-weight:600;}
+  .card .cat{font-size:11px; color:var(--teal); font-weight:600; margin-bottom:6px; letter-spacing:.5px;}
+  .card p{font-size:12px; color:var(--ink2); line-height:1.7; margin-top:6px; flex:1;}
+  .card .meta{margin-top:12px; display:flex; justify-content:space-between; align-items:center;}
+  .card .date{font-size:11px; color:var(--ink3);}
+  .card .open{font-size:12px; color:var(--teal); font-weight:600;}
+  #empty{padding:60px 0; text-align:center; color:var(--ink3); font-size:13px; display:none;}
+  footer{max-width:1180px; margin:0 auto; padding:0 36px 40px; font-size:12px; color:var(--ink3); line-height:1.8;}
+  #viewer{display:none; position:fixed; inset:0; background:rgba(38,33,92,.55); z-index:50;}
+  #viewer .bar{position:absolute; top:0; left:0; right:0; height:52px; background:var(--panel); border-bottom:1px solid var(--line); display:flex; align-items:center; padding:0 18px; gap:14px;}
+  #viewer .bar h3{font-size:14px; font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  #viewer .bar a{font-size:12px; color:var(--teal); text-decoration:none; border:1px solid var(--line); border-radius:7px; padding:6px 12px;}
+  #viewer .bar button{font:inherit; font-size:12px; padding:6px 14px; border-radius:7px; border:1px solid var(--line); background:#fff; color:var(--ink2); cursor:pointer;}
+  #viewer .bar button:hover{border-color:var(--coral); color:var(--coral);}
+  #viewer iframe{position:absolute; top:52px; left:0; width:100%; height:calc(100% - 52px); border:0; background:#fff;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Tech Gallery · 技术图解馆</h1>
+  <p>交互式技术图解合集——点击卡片在本页预览，或新标签页全屏查看。所有图解均为自包含单文件，可离线运行。</p>
+  <div class="tags">
+    <span class="chip" id="stat-count">— 篇图解</span>
+    <span class="chip">纯静态 · 无构建</span>
+    <span class="chip">iframe 懒加载</span>
+    <span class="chip" id="stat-update">最近更新 —</span>
+  </div>
+</header>
+<main>
+  <div id="grid"></div>
+  <div id="empty">没有符合条件的图解</div>
+</main>
+<footer>
+  收录规则：每个图解一个文件夹（demos/&lt;id&gt;/index.html），在 registry.js 注册即可出现在本馆。<br>
+  声明：内容为公开资料整理的技术推演，标注口径与出处，不构成投资建议。
+</footer>
+
+<div id="viewer">
+  <div class="bar">
+    <h3 id="v-title">—</h3>
+    <a id="v-newtab" href="#" target="_blank" rel="noopener">新标签打开 ↗</a>
+    <button id="v-close">关闭 ✕</button>
+  </div>
+  <iframe id="v-frame" title="图解预览"></iframe>
+</div>
+
+<script>
+/* ============ 图解注册表：新增图解在这里加一行 ============
+ * id      文件夹名（demos/<id>/）
+ * title   卡片标题
+ * cat     分类
+ * desc    描述（卡片摘要）
+ * date    更新日期
+ * tech    技术标签数组
+ * ========================================================== */
+const REGISTRY=[
+  {
+    id:'6d-torus',
+    title:'6D Torus 交互式 3D 演示',
+    cat:'AI 互连 · 光通信',
+    desc:'Google TPU v9t 拓扑推演：64 机架 4×4×4 全量渲染，点击机架/TPU/OCS 查看 12 条 ICI 的电光分段、64 模块阵列、192 台 OCS 与绕回弧；含 3D vs 6D 最短路径动画（24 vs 12 跳）。',
+    date:'2026-09-08',
+    tech:['three.js','TPU','OCS','光模块']
+  }
+];
+
+/* ============ 渲染逻辑（勿动） ============ */
+const grid=document.getElementById('grid');
+const viewer=document.getElementById('viewer');
+const vFrame=document.getElementById('v-frame');
+const vTitle=document.getElementById('v-title');
+const vNew=document.getElementById('v-newtab');
+REGISTRY.forEach(d=>{
+  const url=`demos/${d.id}/index.html`;
+  const card=document.createElement('div');
+  card.className='card';
+  card.innerHTML=`
+    <div class="thumb"><iframe loading="lazy" src="${url}" tabindex="-1"></iframe><div class="veil"></div></div>
+    <div class="body">
+      <div class="cat">${d.cat}</div>
+      <h2>${d.title}</h2>
+      <p>${d.desc}</p>
+      <div class="meta">
+        <span class="date">${d.date}</span>
+        <span class="open">查看 →</span>
+      </div>
+    </div>`;
+  card.onclick=()=>{
+    vTitle.textContent=d.title;
+    vFrame.src=url;
+    vNew.href=url;
+    viewer.style.display='block';
+    document.body.style.overflow='hidden';
+  };
+  grid.appendChild(card);
+});
+document.getElementById('stat-count').textContent=REGISTRY.length+' 篇图解';
+document.getElementById('stat-update').textContent='最近更新 '+REGISTRY.map(d=>d.date).sort().reverse()[0];
+document.getElementById('v-close').onclick=()=>{
+  viewer.style.display='none';
+  vFrame.src='about:blank';
+  document.body.style.overflow='';
+};
+viewer.onclick=e=>{ if(e.target===viewer) document.getElementById('v-close').onclick(); };
+addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('v-close').onclick(); });
+</script>
+</body>
+</html>

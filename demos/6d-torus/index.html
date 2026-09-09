@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="0yi1pnMVSY4pidbeXyo7fj">
+<head data-page-node-id="FktsjJ1F2Vuo2R3Fw4Vqbq">
+<meta charset="UTF-8" data-page-node-id="ZJrWE9JFbobRGDLw8glb6p">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="vMBOP4f6dwfR4Fs939T5g6">
+<link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<title>6D Torus 交互式 3D 演示 · TPU v9t（推演）</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#26215c; --ink2:#5f5e5a; --ink3:#888780;
+    --line:#d3d1c7; --teal:#0f6e56; --teal-l:#e1f5ee; --coral:#d85a30; --coral-l:#faece7;
+    --blue:#185fa5; --blue-l:#e6f1fb; --amber:#d9a013; --amber-d:#8a6510;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); overflow:hidden;}
+  #app{display:flex; height:100vh;}
+  #stage{flex:1; position:relative; min-width:0;}
+  canvas{display:block;}
+  #hint{position:absolute; left:14px; bottom:12px; font-size:12px; color:var(--ink3); background:rgba(255,255,255,.85); border:1px solid var(--line); border-radius:6px; padding:6px 10px; pointer-events:none; max-width:70%;}
+  #title{position:absolute; left:14px; top:12px; pointer-events:none;}
+  #title h1{font-size:16px; font-weight:600; color:var(--ink); letter-spacing:.5px;}
+  #title p{font-size:12px; color:var(--ink2); margin-top:2px;}
+  #legend{position:absolute; right:14px; top:12px; background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:12px; color:var(--ink2); line-height:1.95; pointer-events:none;}
+  .dot{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px;}
+  #panel{width:436px; background:var(--panel); border-left:1px solid var(--line); display:flex; flex-direction:column; overflow:hidden;}
+  .sec{padding:13px 16px; border-bottom:1px solid var(--line);}
+  .sec h2{font-size:13px; font-weight:600; color:var(--ink); margin-bottom:9px;}
+  .btnrow{display:flex; gap:8px; flex-wrap:wrap;}
+  button{font:inherit; font-size:12px; padding:6px 12px; border-radius:7px; border:1px solid var(--line); background:#fff; color:var(--ink2); cursor:pointer; transition:all .15s;}
+  button:hover{border-color:var(--teal); color:var(--teal);}
+  button.on{background:var(--teal-l); border-color:var(--teal); color:var(--teal); font-weight:600;}
+  button.warn.on{background:var(--coral-l); border-color:var(--coral); color:var(--coral);}
+  button.blue.on{background:var(--blue-l); border-color:var(--blue); color:var(--blue);}
+  button.amber.on{background:#faf3df; border-color:var(--amber-d); color:var(--amber-d);}
+  .note{font-size:11px; color:var(--ink3); line-height:1.7; margin-top:8px;}
+  .note b{color:var(--ink2); font-weight:600;}
+  table{width:100%; border-collapse:collapse; font-size:11px; margin-top:6px;}
+  th{font-weight:600; color:var(--ink2); text-align:left; padding:3px 4px; border-bottom:1px solid var(--line); white-space:nowrap;}
+  td{padding:2.5px 4px; color:var(--ink2); border-bottom:1px solid #efedea; white-space:nowrap;}
+  td.em{color:var(--ink); font-weight:600;}
+  #info{flex:1; overflow-y:auto;}
+  #selcard{border-radius:10px; padding:11px 12px; margin-top:8px; display:none; border:1px solid var(--line); background:#fbfaf7;}
+  #selcard.show{display:block;}
+  #selcard h3{font-size:12px; font-weight:600; color:var(--ink); margin-bottom:5px;}
+  #selcard p{font-size:11px; color:var(--ink2); line-height:1.7; white-space:normal;}
+  #selcard .addr{font-family:Consolas,monospace; background:#fff; border:1px solid var(--line); border-radius:5px; padding:1px 6px; display:inline-block; margin:2px 0; font-size:11px;}
+  #selcard h4{font-size:11px; font-weight:600; color:var(--teal); margin:8px 0 3px;}
+  .tag{display:inline-block; font-size:10px; border-radius:4px; padding:0 5px; margin-left:4px; vertical-align:1px;}
+  .tag.cu{background:var(--coral-l); color:var(--coral);}
+  .tag.op{background:var(--blue-l); color:var(--blue);}
+  #animbar{background:#fbfaf7;}
+  #progress{height:4px; background:#e7e5dd; border-radius:2px; margin-top:10px; overflow:hidden;}
+  #pbar{height:100%; width:0%; background:#1d9e75; border-radius:2px; transition:width .12s linear;}
+  .mono{font-family:Consolas,monospace;}
+</style>
+</head>
+<body data-page-node-id="fFiFehpu6LuAiaFBxfHM8G">
+<div id="app" data-page-node-id="pwAuYIm8uDwCdiGvcSz3hi">
+  <div id="stage" data-page-node-id="qNcgoN0AJeZ5VzaAtSEOUG">
+    <div id="title" data-page-node-id="4euEgWEKrM8FV2FfzMskq3"><h1 data-page-node-id="QJiKWwPu81rdPE7E94Ebiv">6D Torus 交互式 3D 演示</h1><p data-page-node-id="AqE3REZY5W5hqhpXfTC8Fn">TPU v9t 拓扑推演 · 4⁶ = 4096 卡 · 192 台 OCS 常驻（每环绕段 1 台）· 谷歌未官宣</p></div>
+    <div id="legend" data-page-node-id="cEFEAT0wd1upEEQHodyESy">
+      <b style="color:var(--ink)" data-page-node-id="ZaR20BYyHh60AOUI5UWbBI">图例</b><br data-page-node-id="UvDKbiuI4Xi46Qtq16ZJNN">
+      <span class="dot" style="background:#0f6e56" data-page-node-id="mT0yUAFqUdNj6bzqAe7FMv"></span>选中 TPU / 机架<br data-page-node-id="mjEphz6RZ3cQKIEOyHGCyl">
+      <span class="dot" style="background:#d85a30" data-page-node-id="MtEoigoCRLp91frerTkLaw"></span>电链路（铜 · PCB/DAC 电气信号）<br data-page-node-id="J2biPI0K7AoNBlgb8VzMFX">
+      <span class="dot" style="background:#3266ad" data-page-node-id="nAYS0KLKsCMN7oTjW26s4S"></span>光链路（光纤 · 经 OCS）<br data-page-node-id="K4ip7rLB6azHscfPx5oazG">
+      <span class="dot" style="background:#f0b429; border-radius:50%" data-page-node-id="feaDmxU1URLNI8qCADbQN1"></span>光模块（电↔光转换点）<br data-page-node-id="kPFHYYxyA3pGt4TLPGxs8V">
+      <span class="dot" style="background:#8d6bd6" data-page-node-id="GSCiHbMMqnBfwchCxKJYap"></span>OCS 交换机（常驻 192 台）<br data-page-node-id="2s5FBGW0eB1F3DA16lxNnw">
+      <span class="dot" style="background:#0f8f8f" data-page-node-id="vinjkaKVCtl2q1uWaUHrCl"></span>光链对端机架<br data-page-node-id="8L2lN9J2VIMrW9iQlyxRl7">
+      <span style="color:#185fa5" data-page-node-id="86yklYeOsuTEk9w93z21z3">— — 虚线 = torus 绕回 ↺</span>
+    </div>
+    <div id="hint" data-page-node-id="n8fjPMOq09j5XE3Q9YYu0t">点击机架 → 6 向出框光束 + OCS；点击柜内 TPU → 隐藏外壳、12 条 ICI 三段式显示（芯片→光模块→OCS→对端）；点击 OCS 紫盒看其承载的环绕段与端口账；空白处退出</div>
+  </div>
+  <div id="panel" data-page-node-id="vigWc3FZrGpawBwyIf5fm7">
+    <div id="info" data-page-node-id="FGWbO7NQyu8AH2DydjbowU">
+      <div class="sec" data-page-node-id="Xavpx9lKaUIwpA1KwM5SQr">
+        <h2 data-page-node-id="YvfPy13b0FFGXVBHJ1fOgq">结构分层</h2>
+        <div class="btnrow" data-page-node-id="27PGvNVzsjracAF1N1vPlM">
+          <button id="btnRacks" class="on" data-page-node-id="pE362IEm6kmWTwUG7Qv9wF">机架视图（退出聚焦）</button>
+          <button id="btnOpt" class="warn" data-page-node-id="WKup1UOJRPHRylVo6hfONJ">柜间光链全景</button>
+          <button id="btnOcs" class="amber on" data-page-node-id="D3erX84AkxMekJatRb2yp3">OCS 阵列（192 台）</button>
+        </div>
+        <p class="note" data-page-node-id="rqcwdI5uHv6bG4NaKH153B"><b data-page-node-id="jppoLAzWDBwO45AH7kW0WN">OCS 阵列</b>常驻显示：每"环绕段"1 台（128 口）= 3 维 × 16 环平面 × 4 段 = 192 台（推演口径，v4 为 48 台 ×128 口）。台数随端口规格演进可折减：320 口 → 96 台，640+ 口 → 48 台。<b data-page-node-id="exJ6yHa5ZtNgxkbEayUEFq">柜间光链全景</b>：r 维全量 4096 条。聚焦时临时隐藏，退出恢复。</p>
+      </div>
+      <div class="sec" data-page-node-id="Tl3vJQSWOwMnCcRcNf8jFW">
+        <h2 data-page-node-id="AEWpMbTy6NEps8WlSWtdaz">3D vs 6D 路径对比动画</h2>
+        <div class="btnrow" style="margin-bottom:8px" data-page-node-id="WRrkk6JT8rY09HNK35vEfk">
+          <button id="btnPairA" class="on" data-page-node-id="ye1KUEdriqHZVbNnu7u4iq">对角线对（24 vs 12 跳）</button>
+          <button id="btnPairB" data-page-node-id="sfVOCHf3eE3Z0eRRfYkj26">同槽位·机架+2（24 vs 6 跳）</button>
+        </div>
+        <div class="btnrow" data-page-node-id="DRhEDfU27leMduUqdmrqLd">
+          <button id="btnP3" class="blue" data-page-node-id="X4eICA2txOOtgp7M3O6Xcw">播放 3D 路径</button>
+          <button id="btnP6" class="warn on" data-page-node-id="FCvDQhyCJKVPLi8WG3NZh6">播放 6D 路径</button>
+        </div>
+        <div id="animbar" style="margin-top:10px; border:1px solid var(--line); border-radius:10px; padding:10px 12px;" data-page-node-id="D8ru8fAnEWGBYzhC3SH7JJ">
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--ink3); margin-bottom:4px;" data-page-node-id="CaaClbglsWbkmujQYgNt3M"><span id="alab" data-page-node-id="rGd9EjD1ePtvonLRq6LAt4">就绪</span><span id="acnt" data-page-node-id="cEJobR70D6jJxxHgBFHlQ3"></span></div>
+          <div id="progress" data-page-node-id="0Qf3rWDVFb4jJll4tNrpHb"><div id="pbar" data-page-node-id="7ovyR5T5NE13F8Tf4Qc77c"></div></div>
+          <p class="note" id="anote" style="margin-top:8px" data-page-node-id="hYcCpQL0QBH6QUD5ftQvmc">同槽位对最能体现差异：源与目的柜内坐标完全相同、只差机架号——3D 必须沿芯片坐标逐格爬 24 跳；6D 沿机架维每跳跨一个机架（同槽位直连光链），6 跳直达。均为逐维最短环路路由。</p>
+        </div>
+      </div>
+      <div class="sec" data-page-node-id="u7t0ydj07cTpEYIy5YHArI">
+        <h2 data-page-node-id="kmfgh4KWqooISKateasRIs">参数速览</h2>
+        <table data-page-node-id="GhVtPfbSRPW7QNPvX8srTa">
+          <tr data-page-node-id="J7Xd7KwTPvmEjp1N51Nbvg"><th data-page-node-id="wfB8h4gueZgfJaauRaN6FC"></th><th data-page-node-id="osJXE2axdvIssAWt5xQ7r5">3D Torus（v4/v7）</th><th data-page-node-id="JBCPvAjDX3p6EkkjDCmRDo">6D Torus（v9t 传）</th></tr>
+          <tr data-page-node-id="ttcEF3J2ojqjtIAR90OEJc"><td class="em" data-page-node-id="RUDoE1hhHvg0VD8EKO3qXD">拓扑</td><td data-page-node-id="FVzziCqtg78wgFcqTimT1P">16×16×16</td><td data-page-node-id="EVQEObBvzzRqYow33Xc7km">4×4×4×4×4×4</td></tr>
+          <tr data-page-node-id="L5iqqdJtDIuOrwDQfjCLRk"><td class="em" data-page-node-id="nckAdik4L0U3CEEpjXwzda">每芯片 ICI</td><td data-page-node-id="dVO0OMT2qJwGlgJ9brH9Iw">6 条</td><td style="color:var(--teal);font-weight:600" data-page-node-id="bSsnrGnk80rv3Q5QGMyjpP">12 条</td></tr>
+          <tr data-page-node-id="5UiyBpS90oZSEDa068uJDP"><td class="em" data-page-node-id="DARqLh6Mh6y7HUsZLzyaDJ">网络直径</td><td data-page-node-id="hhCBrAv6LOpvrei3s34p8Q">24 跳</td><td style="color:var(--teal);font-weight:600" data-page-node-id="W0Fr11Byi2Wl6XxgEVd38V">12 跳</td></tr>
+          <tr data-page-node-id="T81oqovzsqORtmlmHCZmwH"><td class="em" data-page-node-id="SzbdgzMBhinYheASlAxiGW">每机架出框光</td><td data-page-node-id="gcqfGSGa930511HqWzfQsv">96 条</td><td style="color:var(--coral);font-weight:600" data-page-node-id="9LT2V9mK2rFoxWzKsziuet">384 端口（64×6）</td></tr>
+          <tr data-page-node-id="jJcuJhpK2BScK9KNEDqe4L"><td class="em" data-page-node-id="t1IouKYLWUOXUWgsecMH1H">OCS 端口配比</td><td data-page-node-id="1maMF8Whxc19vPOFKFGBKA">1:1.5</td><td style="color:var(--coral);font-weight:600" data-page-node-id="XnlpOiyeNtn2yJKKdU7myk">1:6（×4）</td></tr>
+          <tr data-page-node-id="qXFygHCvDZS3E6OlwmxWiY"><td class="em" data-page-node-id="CvalyPE0dJlhBqRgIeUBv8">二分带宽</td><td data-page-node-id="9h7B3o8qHZXlUGnzTXgXth">基准</td><td style="color:var(--teal);font-weight:600" data-page-node-id="wcamElAhAVlFaEjxmVhZTN">×4</td></tr>
+        </table>
+        <p class="note" data-page-node-id="ZC2lZr12bCjtESBlTas8jg">口径注：×4 为 SemiAnalysis OCS 端口口径；国内卖方按 2.4T 模块折算配比 ×2、800G 当量 ×5–6。直径=最坏端点对跳数；环距=环长一半（16 环→8 跳/维，4 环→2 跳/维）。</p>
+      </div>
+      <div class="sec" style="border-bottom:none" data-page-node-id="CcVSVrHFzZceymMyFOYjtm">
+        <h2 data-page-node-id="TUIohIRBq5mib9BQBTsXkr">选中详情</h2>
+        <div id="selcard" data-page-node-id="kmlQY5YAkybETXVALrSWHS">
+          <h3 id="seltitle" data-page-node-id="7dLSzdpcYnENldVFgUZEXk">—</h3>
+          <p id="selbody" data-page-node-id="5N9LKUWmVfm5liAPcVKv9e">—</p>
+          <div id="seltable" data-page-node-id="POAAJug2gVAbUPgdCdjGpD"></div>
+        </div>
+        <p class="note" id="selhint" style="margin-top:8px" data-page-node-id="AK9k39lCOp5bYY3YpHrF3c">尚未选中：点击机架 / 柜内 TPU / 紫色 OCS 盒体，此处展开拓扑计算、连接方式与介质明细。</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="importmap">
+{ "imports": { "three": "./three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const R=4, C=4;
+const SPACING_R=6, SPACING_C=1.55;
+const scene=new THREE.Scene();
+const PANEL_W=436;
+const camera=new THREE.PerspectiveCamera(48, (innerWidth-PANEL_W)/innerHeight, .1, 2000);
+camera.position.set(34,26,38);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth-PANEL_W, innerHeight);
+document.getElementById('stage').appendChild(renderer.domElement);
+addEventListener('resize',()=>{camera.aspect=(innerWidth-PANEL_W)/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth-PANEL_W,innerHeight);});
+scene.add(new THREE.AmbientLight(0xffffff,.85));
+const dl=new THREE.DirectionalLight(0xffffff,.9); dl.position.set(30,50,20); scene.add(dl);
+const grid=new THREE.GridHelper(120,24,0xd9d7cd,0xe8e6df); grid.position.y=-22; scene.add(grid);
+
+/* ---------- 材质 ---------- */
+const rackGeo=new THREE.BoxGeometry(5.4,5.4,5.4);
+const rackMat=new THREE.MeshLambertMaterial({color:0x8a8a84, transparent:true, opacity:.28});
+const rackMatHi=new THREE.MeshLambertMaterial({color:0x0f6e56, transparent:true, opacity:.5});
+const rackMatOpt=new THREE.MeshLambertMaterial({color:0x0f8f8f, transparent:true, opacity:.42});
+const rackEdgeMat=new THREE.LineBasicMaterial({color:0x9a9a92, transparent:true, opacity:.8});
+const rackEdgeHi=new THREE.LineBasicMaterial({color:0x0f6e56});
+const rackEdgeOpt=new THREE.LineBasicMaterial({color:0x0b6b6b});
+const chipGeo=new THREE.BoxGeometry(.5,.5,.5);
+const chipMat=new THREE.MeshLambertMaterial({color:0x9aa2ad});
+const chipDimMat=new THREE.MeshLambertMaterial({color:0xb9bec7, transparent:true, opacity:.45});
+const chipHiMat=new THREE.MeshLambertMaterial({color:0x0f6e56});
+const copperMat=new THREE.LineBasicMaterial({color:0x9aa2ad, transparent:true, opacity:.5});
+const fiberMat=new THREE.LineBasicMaterial({color:0xd85a30, transparent:true, opacity:.26});
+const CU=0xd85a30, OP=0x3266ad, FIB=0x3266ad, ELE=0xd85a30;   // v5：电=橙、光=蓝
+const OCS_COLOR=0x8d6bd6, OCS_HI=0x5b3fa0;
+const PATH3=0x5b3fa0, PATH6=0x0b7a4b;   // 动画路径色（避开介质色）
+
+/* ---------- 坐标 ---------- */
+const rackPos=(r,s,t)=>new THREE.Vector3((r-1.5)*SPACING_R,(s-1.5)*SPACING_R,(t-1.5)*SPACING_R);
+const chipLocal=(x,y,z)=>new THREE.Vector3((x-1.5)*SPACING_C,(y-1.5)*SPACING_C,(z-1.5)*SPACING_C);
+const chipWorld=(x,y,z,r,s,t)=>chipLocal(x,y,z).add(rackPos(r,s,t));
+const wrap4=i=>((i%4)+4)%4;
+const AXIS_OF={r:0,s:1,t:2,x:0,y:1,z:2};   // r/x→场景X, s/y→Y, t/z→Z
+
+/* ---------- 机架群 ---------- */
+const racks=[]; const rackIndex={};
+for(let r=0;r<R;r++)for(let s=0;s<R;s++)for(let t=0;t<R;t++){
+  const pos=rackPos(r,s,t);
+  const mesh=new THREE.Mesh(rackGeo,rackMat); mesh.position.copy(pos);
+  const eg=new THREE.LineSegments(new THREE.EdgesGeometry(rackGeo),rackEdgeMat); eg.position.copy(pos);
+  scene.add(mesh); scene.add(eg);
+  const k={mesh,edges:eg,ix:r,iy:s,iz:t,pos};
+  racks.push(k); rackIndex[r+','+s+','+t]=k;
+}
+function setRackStyle(r,s,t,mode){
+  const k=rackIndex[r+','+s+','+t]; if(!k) return;
+  if(mode==='hide'){ k.mesh.visible=false; k.edges.visible=false; return; }
+  k.mesh.visible=true; k.edges.visible=true;
+  k.mesh.material = mode==='hi'?rackMatHi : mode==='opt'?rackMatOpt : rackMat;
+  k.edges.material = mode==='hi'?rackEdgeHi : mode==='opt'?rackEdgeOpt : rackEdgeMat;
+}
+function resetRackStyles(){ racks.forEach(k=>{k.mesh.visible=true; k.edges.visible=true; k.mesh.material=rackMat; k.edges.material=rackEdgeMat;}); }
+
+/* ---------- OCS 阵列：每环绕段 1 台（128 口）= 3 维 × 16 平面 × 4 段 = 192 台（常驻） ---------- */
+const ocsGeo=new THREE.BoxGeometry(1.15,.68,1.15);
+const ocsMat=new THREE.MeshLambertMaterial({color:OCS_COLOR, transparent:true, opacity:.85});
+const ocsMatHi=new THREE.MeshLambertMaterial({color:OCS_HI});
+const ocsGroup=new THREE.Group();
+const ocsList=[];
+const DIM_OFFSET={r:[0,.45,.45], s:[.45,0,.45], t:[.45,.45,0]};   // 各维微错位避免同点重叠
+function ocsCenterOf(ax,a,b,seg){
+  const axisIdx=AXIS_OF[ax];
+  const fromP=(seg-1.5)*SPACING_R;
+  const toP=((seg+1)%4-1.5)*SPACING_R;
+  const along = seg===3 ? fromP+5.2 : (fromP+toP)/2;   // 绕回段 OCS 悬挑在环外（长缆交换）
+  const c=new THREE.Vector3();
+  const others=[0,1,2].filter(i=>i!==axisIdx);
+  c.setComponent(others[0],(a-1.5)*SPACING_R);
+  c.setComponent(others[1],(b-1.5)*SPACING_R);
+  c.setComponent(axisIdx, along);
+  const off=DIM_OFFSET[ax];
+  c.x+=off[0]; c.y+=off[1]; c.z+=off[2];
+  return c;
+}
+function buildOCSArray(){
+  ['r','s','t'].forEach(ax=>{
+    for(let a=0;a<R;a++)for(let b=0;b<R;b++)for(let seg=0;seg<4;seg++){
+      const c=ocsCenterOf(ax,a,b,seg);
+      const mesh=new THREE.Mesh(ocsGeo,ocsMat);
+      mesh.position.copy(c);
+      const axisIdx=AXIS_OF[ax];
+      if(axisIdx===0) mesh.rotation.z=Math.PI/2;
+      if(axisIdx===2) mesh.rotation.x=Math.PI/2;
+      mesh.userData={type:'ocs', ax, a, b, seg, center:c.clone(), axisIdx};
+      ocsGroup.add(mesh);
+      ocsList.push(mesh);
+    }
+  });
+  scene.add(ocsGroup);
+}
+buildOCSArray();
+/* 链路 → 所属段 OCS：段 = 环平面内 C(seg)→C(seg+1)；d=+1 段=fromR，d=−1 段=wrap(fromR−1) */
+function segOf(fromR,d){ return d>0? fromR : wrap4(fromR-1); }
+function findOCS(ax,a,b,seg){
+  return ocsList.find(m=>m.userData.ax===ax&&m.userData.a===a&&m.userData.b===b&&m.userData.seg===seg);
+}
+function planeCoordsOfLink(ax, r,s,t){
+  if(ax==='r') return [s,t];
+  if(ax==='s') return [r,t];
+  return [r,s];
+}
+
+/* ---------- 工具：线体 ---------- */
+const YUP=new THREE.Vector3(0,1,0);
+function fatLine(a,b,color,radius){
+  const dir=new THREE.Vector3().subVectors(b,a);
+  const len=dir.length();
+  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,len,10,1), new THREE.MeshLambertMaterial({color}));
+  mesh.position.copy(a).addScaledVector(dir,.5);
+  mesh.quaternion.setFromUnitVectors(YUP, dir.clone().normalize());
+  return mesh;
+}
+function dashLine(a,b,color,dash,gap,radius){
+  const g=new THREE.Group();
+  const dir=new THREE.Vector3().subVectors(b,a);
+  const len=dir.length();
+  const segs=Math.max(4,Math.round(len/(dash+gap)));
+  const segLen=len/segs;
+  for(let i=0;i<segs;i+=2){
+    const p0=a.clone().addScaledVector(dir,(i*segLen)/len);
+    const p1=a.clone().addScaledVector(dir,((i+1)*segLen)/len);
+    g.add(fatLine(p0,p1,color,radius));
+  }
+  return g;
+}
+function makeOpticalModule(pos){
+  const m=new THREE.Mesh(new THREE.SphereGeometry(.26,12,12), new THREE.MeshLambertMaterial({color:0xf0b429, emissive:0x4a3a05}));
+  m.position.copy(pos);
+  return m;
+}
+function makeOCSMark(pos,hi){
+  const g=new THREE.Group();
+  const oct=new THREE.Mesh(new THREE.OctahedronGeometry(.4), new THREE.MeshLambertMaterial({color:hi?OCS_HI:OCS_COLOR, emissive:0x2a1d52}));
+  const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.OctahedronGeometry(.4)), new THREE.LineBasicMaterial({color:hi?0xffffff:0x5b3fa0}));
+  g.add(oct); g.add(edge);
+  g.position.copy(pos);
+  return g;
+}
+
+/* ---------- 柜内芯片展开 ---------- */
+let intraGroup=null;
+function buildIntra(r,s,t,withGrid=true){
+  clearIntra();
+  const g=new THREE.Group(); const pts=[];
+  for(let x=0;x<C;x++)for(let y=0;y<C;y++)for(let z=0;z<C;z++){
+    const p=chipWorld(x,y,z,r,s,t);
+    const m=new THREE.Mesh(chipGeo, withGrid?chipMat:chipDimMat); m.position.copy(p);
+    m.userData={type:'chip',x,y,z,r,s,t};
+    g.add(m);
+    const hitbox=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.1,1.1), new THREE.MeshBasicMaterial({visible:false}));
+    hitbox.position.copy(p);
+    hitbox.userData={type:'chip',x,y,z,r,s,t,hb:true};
+    g.add(hitbox);
+    if(withGrid){
+      [[1,0,0],[0,1,0],[0,0,1]].forEach(d=>{
+        const nx=x+d[0],ny=y+d[1],nz=z+d[2];
+        if(nx>3||ny>3||nz>3) return;
+        pts.push(p, chipWorld(nx,ny,nz,r,s,t));
+      });
+    }
+  }
+  if(withGrid) g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),copperMat));
+  intraGroup=g; scene.add(g);
+}
+function clearIntra(){
+  if(intraGroup){scene.remove(intraGroup); intraGroup.traverse(o=>{if(o.geometry)o.geometry.dispose();}); intraGroup=null;}
+}
+
+/* ---------- 柜间光链全景层 ---------- */
+let optGroup=null;
+function buildOpt(show){
+  if(!show){ if(optGroup){scene.remove(optGroup); optGroup.traverse(o=>{if(o.geometry)o.geometry.dispose();}); optGroup=null;} return; }
+  if(optGroup) return;
+  const g=new THREE.Group(); const pts=[];
+  for(let r=0;r<R;r++)for(let s=0;s<R;s++)for(let t=0;t<R;t++){
+    for(let x=0;x<C;x++)for(let y=0;y<C;y++)for(let z=0;z<C;z++){
+      pts.push(chipWorld(x,y,z,r,s,t), chipWorld(x,y,z,wrap4(r+1),s,t));
+    }
+    for(let y=0;y<C;y++)for(let z=0;z<C;z++){
+      pts.push(chipWorld(1,y,z,r,s,t), chipWorld(1,y,z,r,wrap4(s+1),t));
+      pts.push(chipWorld(y,1,z,r,s,t), chipWorld(y,1,z,r,s,wrap4(t+1)));
+    }
+  }
+  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),fiberMat));
+  optGroup=g; scene.add(g);
+}
+
+/* ---------- 聚焦层 ---------- */
+let focusGroup=null, focusHiddenOpt=false, focusHiddenOcs=false;
+function clearFocus(){
+  if(focusGroup){scene.remove(focusGroup); focusGroup.traverse(o=>{if(o.geometry)o.geometry.dispose();}); focusGroup=null;}
+  if(focusHiddenOpt&&optGroup){optGroup.visible=true;}
+  ocsList.forEach(m=>m.material=ocsMat);
+  focusHiddenOpt=false;
+  resetRackStyles();
+  auto=true;
+}
+function enterFocus(){
+  if(optGroup&&optGroup.visible){optGroup.visible=false; focusHiddenOpt=true;}
+  auto=false;   // OCS 阵列保持可见——它是光链路的实际途经设备
+}
+
+/* 点机架：每向 64 模块球阵列 + 模块→OCS 平行束；绕回长缆走环外大弧 */
+function buildRackFocus(r,s,t){
+  clearFocus(); enterFocus();
+  const g=new THREE.Group();
+  setRackStyle(r,s,t,'hi');
+  const boardGeo=new THREE.BoxGeometry(2.3,.16,2.3);
+  const boardMat=new THREE.MeshLambertMaterial({color:0xc9971f, emissive:0x2a2004});
+  const modGeo=new THREE.SphereGeometry(.085,10,10);
+  const modMat=new THREE.MeshLambertMaterial({color:0xf0b429, emissive:0x4a3a05});
+  const AXES=[['r',0],['s',1],['t',2]];
+  const rackHalf=2.7;
+  AXES.forEach(([ax,axisIdx])=>{
+    [1,-1].forEach(d=>{
+      const cur={r,s,t};
+      const nv=wrap4(cur[ax]+d);
+      const isWrap=(d===1&&nv<cur[ax])||(d===-1&&nv>cur[ax]);
+      const nr=ax==='r'?nv:r, ns=ax==='s'?nv:s, nt=ax==='t'?nv:t;
+      const nRackPos=rackPos(nr,ns,nt);
+      const dir=new THREE.Vector3(); dir.setComponent(axisIdx,d);
+      const b1=rackPos(r,s,t).clone().addScaledVector(dir,rackHalf+.42);
+      const b2=nRackPos.clone().addScaledVector(dir,-(rackHalf+.42));
+      const faceAxes=[0,1,2].filter(i=>i!==axisIdx);
+      const mkBoard=(bp,sgn)=>{
+        const bm=new THREE.Mesh(boardGeo,boardMat);
+        bm.position.copy(bp);
+        if(axisIdx===0) bm.rotation.z=Math.PI/2;
+        if(axisIdx===2) bm.rotation.x=Math.PI/2;
+        g.add(bm);
+      };
+      mkBoard(b1); mkBoard(b2);
+      // 64 个模块球（8×8 阵列映射 64 芯片，每芯片每向 1 个专属模块）
+      const modPts1=[], modPts2=[];
+      for(let i=0;i<64;i++){
+        const u=(i%8-3.5)/3.5*.95, v=(Math.floor(i/8)-3.5)/3.5*.95;
+        const p1=b1.clone();
+        p1.setComponent(faceAxes[0], b1.getComponent(faceAxes[0])+u);
+        p1.setComponent(faceAxes[1], b1.getComponent(faceAxes[1])+v);
+        const s1=p1.clone().addScaledVector(dir,.13);
+        const m1=new THREE.Mesh(modGeo,modMat); m1.position.copy(s1); g.add(m1); modPts1.push(s1);
+        const p2=b2.clone();
+        p2.setComponent(faceAxes[0], b2.getComponent(faceAxes[0])+u);
+        p2.setComponent(faceAxes[1], b2.getComponent(faceAxes[1])+v);
+        const s2=p2.clone().addScaledVector(dir,-.13);
+        const m2=new THREE.Mesh(modGeo,modMat); m2.position.copy(s2); g.add(m2); modPts2.push(s2);
+      }
+      const [pa,pb]=planeCoordsOfLink(ax,r,s,t);
+      const ocs=findOCS(ax,pa,pb,segOf(cur[ax],d));
+      const ocsP=ocs?ocs.userData.center.clone():b1.clone().add(b2).multiplyScalar(.5);
+      if(ocs) ocs.material=ocsMatHi;
+      // 电段：64 芯片↔模块球
+      const ELE_P=[];
+      for(let x=0;x<C;x++)for(let y=0;y<C;y++)for(let z=0;z<C;z++){
+        const i=x*16+y*4+z;
+        ELE_P.push(chipWorld(x,y,z,r,s,t), modPts1[i]);
+        ELE_P.push(modPts2[i], chipWorld(x,y,z,nr,ns,nt));
+      }
+      g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(ELE_P), new THREE.LineBasicMaterial({color:ELE, transparent:true, opacity:.65})));
+      // 光段：平行束进出 OCS 两侧入口；长缆（绕回侧到环外 OCS）走外侧大弧
+      const FIB_P=[];
+      const axisVec=new THREE.Vector3().setComponent(axisIdx,d);
+      const side1=ocsP.clone().addScaledVector(axisVec,.62);
+      const side2=ocsP.clone().addScaledVector(axisVec,-.62);
+      const needArc1=modPts1[0].distanceTo(side1)>SPACING_R*1.15;
+      const needArc2=modPts2[0].distanceTo(side2)>SPACING_R*1.15;
+      const arcSeg=(a,b)=>{
+        const dist=a.distanceTo(b);
+        const mid=a.clone().add(b).multiplyScalar(.5);
+        const outDir=b.clone().sub(a).normalize();
+        const ctrl=mid.clone().addScaledVector(outDir,0);
+        ctrl.setComponent(faceAxes[0], ctrl.getComponent(faceAxes[0])+SPACING_R*.8);
+        const c=new THREE.QuadraticBezierCurve3(a,ctrl,b);
+        const pts=c.getPoints(12);
+        for(let k=0;k<pts.length-1;k++) FIB_P.push(pts[k],pts[k+1]);
+      };
+      for(let i=0;i<64;i++){
+        const u=(i%8-3.5)/3.5*.42, v=(Math.floor(i/8)-3.5)/3.5*.42;
+        const q1=side1.clone(); q1.setComponent(faceAxes[0],side1.getComponent(faceAxes[0])+u); q1.setComponent(faceAxes[1],side1.getComponent(faceAxes[1])+v);
+        const q2=side2.clone(); q2.setComponent(faceAxes[0],side2.getComponent(faceAxes[0])+u); q2.setComponent(faceAxes[1],side2.getComponent(faceAxes[1])+v);
+        if(needArc1) arcSeg(modPts1[i],q1); else FIB_P.push(modPts1[i],q1);
+        if(needArc2) arcSeg(modPts2[i],q2); else FIB_P.push(modPts2[i],q2);
+      }
+      g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(FIB_P), new THREE.LineBasicMaterial({color:FIB, transparent:true, opacity:.85})));
+      setRackStyle(nr,ns,nt,'opt');
+    });
+  });
+  focusGroup=g; scene.add(g);
+}
+
+/* 点芯片：12 条 ICI 三段式 */
+function buildChipFocus(u){
+  clearFocus(); enterFocus();
+  buildIntra(u.r,u.s,u.t,false);
+  setRackStyle(u.r,u.s,u.t,'hide');
+  const g=new THREE.Group();
+  const selfPos=chipWorld(u.x,u.y,u.z,u.r,u.s,u.t);
+  const selfRackPos=rackPos(u.r,u.s,u.t);
+  const rackHalf=2.7;
+  const rows=[];
+  /* 6 条柜内铜（纯电，两端芯片直连） */
+  [['x',1],['x',-1],['y',1],['y',-1],['z',1],['z',-1]].forEach(([ax,d])=>{
+    const cur={x:u.x,y:u.y,z:u.z};
+    const nv=wrap4(cur[ax]+d);
+    const isWrap=(d===1&&nv<cur[ax])||(d===-1&&nv>cur[ax]);
+    const tgt={...cur}; tgt[ax]=nv;
+    const tp=chipWorld(tgt.x,tgt.y,tgt.z,u.r,u.s,u.t);
+    if(isWrap) g.add(dashLine(selfPos,tp,CU,.2,.14,.05));
+    else g.add(fatLine(selfPos,tp,CU,.055));
+    const calc=`${ax}${d>0?'+1':'−1'}=${isWrap?'0 mod 4 ↺':nv}`;
+    rows.push({dir:`${d>0?'+':'−'}${ax}`, calc, nb:`(${tgt.x+1},${tgt.y+1},${tgt.z+1}) 本机架`, media:'电', path:'铜直连（柜内 PCB/DAC）', type:'cu', wrap:isWrap});
+  });
+  /* 6 条柜间光（电→光模块→OCS→光模块→电 三段） */
+  [['r',1],['r',-1],['s',1],['s',-1],['t',1],['t',-1]].forEach(([ax,d])=>{
+    const cur={r:u.r,s:u.s,t:u.t};
+    const nv=wrap4(cur[ax]+d);
+    const isWrap=(d===1&&nv<cur[ax])||(d===-1&&nv>cur[ax]);
+    const tgt={...cur}; tgt[ax]=nv;
+    const axisIdx=AXIS_OF[ax];
+    const nRackPos=rackPos(tgt.r,tgt.s,tgt.t);
+    const dir=new THREE.Vector3(); dir.setComponent(axisIdx,d);
+    // 本端：芯片 → 机架面 → 面外光模块
+    const exitFace=selfRackPos.clone().addScaledVector(dir,rackHalf);
+    const mod1=exitFace.clone().addScaledVector(dir,.5);
+    // 对端：光模块 → 机架面 → 同槽位芯片
+    const entryFace=nRackPos.clone().addScaledVector(dir,-rackHalf);
+    const mod2=entryFace.clone().addScaledVector(dir,-.5);
+    const tp=chipWorld(u.x,u.y,u.z,tgt.r,tgt.s,tgt.t);
+    const [pa,pb]=planeCoordsOfLink(ax,u.r,u.s,u.t);
+    const ocs=findOCS(ax,pa,pb,segOf(cur[ax],d));
+    const ocsP=ocs?ocs.userData.center.clone():mod1.clone().add(mod2).multiplyScalar(.5);
+    if(ocs) ocs.material=ocsMatHi;
+    const drawSeg=(a,b,color,rad)=>{ isWrap? g.add(dashLine(a,b,color,.24,.18,rad)) : g.add(fatLine(a,b,color,rad)); };
+    const drawFib=(a,b)=>{
+      if(!isWrap){ g.add(fatLine(a,b,FIB,.05)); return; }
+      const dist=a.distanceTo(b);
+      const mid=a.clone().add(b).multiplyScalar(.5);
+      const faceAxes=[0,1,2].filter(i=>i!==axisIdx);
+      mid.setComponent(faceAxes[0], mid.getComponent(faceAxes[0])+SPACING_R*1.1);
+      const c=new THREE.QuadraticBezierCurve3(a,mid,b);
+      const pts=c.getPoints(22);
+      for(let k=0;k<pts.length-1;k+=2) g.add(fatLine(pts[k],pts[k+1],FIB,.05));   // 弧形虚线（隔段画=虚线感）
+    };
+    drawSeg(selfPos,mod1,ELE,.045);      // 电段1：芯片→本端专属模块
+    drawFib(mod1,ocsP);                  // 光纤1：模块→OCS（绕回走环外弧）
+    drawFib(ocsP,mod2);                  // 光纤2：OCS→对端模块
+    drawSeg(mod2,tp,ELE,.045);           // 电段2：对端模块→芯片
+    g.add(makeOpticalModule(mod1));
+    g.add(makeOpticalModule(mod2));
+    setRackStyle(tgt.r,tgt.s,tgt.t,'opt');
+    const calc=`${ax}${d>0?'+1':'−1'}=${isWrap?'0 mod 4 ↺':nv}`;
+    rows.push({dir:`${d>0?'+':'−'}${ax}`, calc, nb:`R(${tgt.r},${tgt.s},${tgt.t})·同槽(${u.x+1},${u.y+1},${u.z+1})`, media:'光', path:'铜→光模块→OCS→光模块→铜', type:'op', wrap:isWrap, ocs:`OCS(${ax}|${pa},${pb})`});
+  });
+  focusGroup=g; scene.add(g);
+  intraGroup.children.forEach(o=>{
+    if(o.userData&&o.userData.type==='chip'&&!o.userData.hb&&o.userData.x===u.x&&o.userData.y===u.y&&o.userData.z===u.z){
+      o.material=chipHiMat; o.scale.setScalar(1.9);
+    }
+  });
+  return rows;
+}
+
+/* ---------- 侧栏卡片 ---------- */
+function showRackCard(r,s,t){
+  document.getElementById('selhint').style.display='none';
+  const card=document.getElementById('selcard');
+  document.getElementById('seltitle').textContent=`机架 R(${r},${s},${t}) · Cube 层`;
+  document.getElementById('selbody').innerHTML=
+    `<h4>拓扑计算方式</h4>
+     机架坐标 (r,s,t) 每向 ±1 经 <span class="mono">mod 4</span> 环绕取邻居。柜内 64 颗 TPU = 4×4×4 芯片级环面（柜内全电）。出框端口 = 64 芯片 × 6 向 = <b style="color:#d85a30">384 个光端口 = 384 个 800G FR 光模块</b>（每芯片每向 1 个，黄色模块排即其实际阵列）。全 Pod 64 机架 × 384 = <b>24576 个光模块</b>（v7 口径仅 1.5 个/芯片）。<br>
+     <h4>连接方式（三段式）</h4>
+     每向 <b>64 条实际链路</b>（图中逐条画出）：<b style="color:#d85a30">电段</b>芯片→面板模块排 → <b style="color:#3266ad">光纤段</b>→ 本段唯一一台 OCS → <b style="color:#3266ad">光纤段</b>→ 对端模块排 → <b style="color:#d85a30">电段</b>→ 同槽位芯片。绕回长缆走<b>环外大弧</b>进环外 OCS（悬挑交换）。青架=对端；黄板上的 64 个小球=64 个光模块（8×8 阵列，与 64 芯片一一对应）；紫盒=途经 OCS。<br>
+     <h4>光模块型号</h4>
+     <b>800G OSFP FR（可插拔）</b>——8×100G PAM4，CWDM8 合波至单纤 LC，接入 OCS 端口；v9t 推演口径每芯片 6 个（7.2T=6×1.2T），后续或换 <b>2.4T OSFP（TFLN 薄膜铌酸锂调制器）</b>同位升级：OCS 对速率透明，模块换代不动 OCS 与光纤。
+     <h4>连接介质</h4>
+     电段：PCB/DAC；光段：800G FR 光模块（单纤 CWDM8）→ OCS 端口 → 对端，单链 1.2Tbps。绕回方向走长距光缆经 OCS。<br>
+     <b>下一步</b>：点击柜内 TPU 看逐条三段路径。`;
+  document.getElementById('seltable').innerHTML='';
+  card.classList.add('show');
+}
+function showChipCard(u,rows){
+  document.getElementById('selhint').style.display='none';
+  const card=document.getElementById('selcard');
+  const cuW=rows.filter(r=>r.type==='cu'&&r.wrap).length;
+  const opW=rows.filter(r=>r.type==='op'&&r.wrap).length;
+  document.getElementById('seltitle').textContent=`TPU (${u.x+1},${u.y+1},${u.z+1}) @ R(${u.r},${u.s},${u.t})`;
+  document.getElementById('selbody').innerHTML=
+    `六元组地址 <span class="addr">(x,y,z | r,s,t) = (${u.x+1},${u.y+1},${u.z+1} | ${u.r},${u.s},${u.t})</span>，已隐藏所在机架外壳。12 条 ICI = 电绕回 ${cuW} + 电直连 ${6-cuW} + 光绕回 ${opW} + 光直达 ${6-opW}。
+     <h4>拓扑计算方式</h4>
+     环绕规则：邻居 = (坐标 ± 1) <span class="mono">mod 4</span>，柜内 与机架 坐标<b>各自独立环绕</b>——加 1 越过 3 回 0（绕回 ↺ 虚线），减 1 低于 0 到 3。全域 4⁶ = 4096 颗，直径 = 6 维 × 2 跳 = 12。
+     <h4>连接方式</h4>
+     前 6 条（橙·纯电）：柜内芯片级 3D，±x/±y/±z 直连邻芯片，绕回横穿机架。后 6 条（三段式）：芯片 →<b style="color:#d85a30">[电·铜]</b>→ 光模块（黄球=光电转换）→<b style="color:#3266ad">[光纤]</b>→ OCS（紫八面体）→<b style="color:#3266ad">[光纤]</b>→ 对端光模块 →<b style="color:#d85a30">[电·铜]</b>→ 邻机架同槽位芯片。TPU 芯片本身不发光：信号以电形式出芯片，到面板光模块才转成光，全程"光只在两台光模块之间"。
+     <h4>连接介质</h4>
+     电段：同托盘 PCB / 跨托盘 DAC，800Gbps。光段：800G FR 光模块（单纤 CWDM8）+ OCS 端口，1.2Tbps/条。合计 4.8T 电 + 7.2T 光 ≈ 3×2.4T 模块（推演口径）。<br>
+     <b style="color:#0f6e56">模块归属（与 3D 的关键区别）</b>：6 条跨柜光链各配<b>专属光模块</b>——型号 <b>800G OSFP FR 可插拔</b>（8×100G PAM4 / CWDM8 单纤），每芯片 6 个、与链路一一对应，不借用边界芯片的模块——3D 时代只有 Cube 表面芯片有光模块（均 1.5 个/芯片），内部芯片出柜须逐跳爬到"同列最右边"的边界芯片借它的模块转光；6D 把出框权下放到每颗芯片，每列每颗芯片直接出框（每机架每向 64 模块、全架 384 个）。<br>
+     <b style="color:#0f6e56">封装形态</b>：本代为<b>可插拔</b>（800G FR → 2.4T，TFLN 生态 27–28 成熟；OCS 速率透明使可插拔经济性最优）。NPO（光引擎上板近芯片，铜距缩至 ~10cm）→ CPO（光引擎进封装，铜段归零，"芯片出光"愿景）是 2028+ 下一代路径——6 专属模块/芯片的面板密度与电气距离压力是直接推手；CPO 先落地于交换侧（NVIDIA 口径），TPU 出框链路本代不动。`;
+  let html=`<table><tr><th>#</th><th>方向</th><th>邻居计算</th><th>对端</th><th>介质</th><th>路径</th></tr>`;
+  rows.forEach((row,i)=>{
+    html+=`<tr>
+      <td>${i+1}</td>
+      <td class="mono" style="font-weight:600;color:${row.type==='cu'?'#d85a30':'#3266ad'}">${row.dir}</td>
+      <td class="mono">${row.calc}</td>
+      <td>${row.nb}${row.ocs?`<br><span class="mono" style="color:#5b3fa0;font-size:10px">${row.ocs}</span>`:''}</td>
+      <td><span class="tag ${row.type}">${row.media}</span></td>
+      <td>${row.path}</td>
+    </tr>`;
+  });
+  html+='</table>';
+  html+=`<p style="font-size:10.5px;color:var(--ink3);margin-top:6px;line-height:1.6;white-space:normal">橙线=电段（铜 · PCB/DAC）；蓝线=光段（光纤 · 经 OCS）；黄球=光模块（电↔光转换，唯一用球处）；紫八面体=本链路所属 OCS；虚线=绕回 ↺。</p>`;
+  document.getElementById('seltable').innerHTML=html;
+  card.classList.add('show');
+}
+function showOCSCard(ax,a,b,seg){
+  document.getElementById('selhint').style.display='none';
+  const card=document.getElementById('selcard');
+  const fromR=seg, toR=wrap4(seg+1);
+  document.getElementById('seltitle').textContent=`OCS · ${ax} 维环平面(${a},${b}) · 段 C${fromR}→C${toR}${seg===3?'（绕回）':''}`;
+  document.getElementById('selbody').innerHTML=
+    `<h4>为什么两 Cube 之间只经一台 OCS</h4>
+     OCS 不是"每对 Cube 一台"的点对点设备，而是<b>配线架</b>：本段两端机架（C${fromR} 与 C${toR}）的 ${ax} 维端口组各 64 链，<b>全部汇入这一台</b>；MEMS 微镜把任意入纤接到任意出纤，所以任意两 Cube 的链路恰好只经一台。这正是电路交换的本质——把逐对专线变成共享配线架，且对速率/波长透明。
+     <h4>端口账（实际量）</h4>
+     一台 = 1 个环绕段 = 2 端口组 × 64 链 = <b>128 个 OCS 端口</b>（对应 128 个 800G 光模块对端）。全 Pod = 3 维 × 16 环平面 × 4 段 = <b>192 台</b>（128 口规格）＝ v4（48 台）的 4 倍，与 SemiAnalysis"OCS 端口 ×4"推演一致；若上 320 口 → 96 台，640+ 口 → 48 台。
+     <h4>绕回段（seg=3）</h4>
+     C3→C0 的环绕长缆同样只经一台——OCS 悬挑在环外侧（图中本台位置），Twisted Torus / 故障重构就发生在这里：改配对即可改变逻辑拓扑，不动光纤。`;
+  document.getElementById('seltable').innerHTML='';
+  card.classList.add('show');
+}
+
+/* ---------- 选择逻辑 ---------- */
+function select(u){
+  if(!u){
+    clearFocus(); clearIntra();
+    document.getElementById('selcard').classList.remove('show');
+    document.getElementById('selhint').style.display='block';
+    document.getElementById('btnRacks').classList.add('on');
+    return;
+  }
+  if(u.type==='rack'){
+    buildRackFocus(u.r,u.s,u.t);
+    buildIntra(u.r,u.s,u.t,true);
+    setRackStyle(u.r,u.s,u.t,'hi');
+    showRackCard(u.r,u.s,u.t);
+  } else if(u.type==='chip'){
+    const rows=buildChipFocus(u);
+    showChipCard(u,rows);
+  } else if(u.type==='ocs'){
+    clearFocus();
+    const d=u;
+    ocsList.forEach(m=>m.material=ocsMat);
+    const me=ocsList.find(m=>m.userData.ax===d.ax&&m.userData.a===d.a&&m.userData.b===d.b);
+    if(me) me.material=ocsMatHi;
+    showOCSCard(d.ax,d.a,d.b,d.seg);
+    auto=false;
+  }
+}
+
+/* ---------- 路由动画 ---------- */
+function route3D(src,dst){
+  const path=[]; const st={...src}; path.push({...st});
+  [['x','r'],['y','s'],['z','t']].forEach(([c,k])=>{
+    const g0=st[k]*4+st[c], g1=dst[k]*4+dst[c];
+    let delta=(g1-g0+16)%16;
+    const dir=delta<=8?1:-1;
+    const steps=dir===1?delta:16-delta;
+    for(let i=0;i<steps;i++){
+      let v=st[c]+dir;
+      if(v>3){v=0; st[k]=wrap4(st[k]+1);}
+      else if(v<0){v=3; st[k]=wrap4(st[k]-1);}
+      st[c]=v; path.push({...st});
+    }
+  });
+  return path;
+}
+function route6D(src,dst){
+  const path=[]; const st={...src}; path.push({...st});
+  ['x','y','z','r','s','t'].forEach(d=>{
+    const delta=(dst[d]-st[d]+4)%4;
+    const dir=delta<=2?1:-1;
+    const steps=dir===1?delta:4-delta;
+    for(let i=0;i<steps;i++){ st[d]=wrap4(st[d]+dir); path.push({...st}); }
+  });
+  return path;
+}
+const PAIRS={
+  A:{name:'对角线对', src:{x:0,y:0,z:0,r:0,s:0,t:0}, dst:{x:2,y:2,z:2,r:2,s:2,t:2}},
+  B:{name:'同槽位·机架+2对', src:{x:0,y:1,z:2,r:0,s:0,t:0}, dst:{x:0,y:1,z:2,r:2,s:2,t:2}}
+};
+let curPair='A';
+let anim=null;
+function stopAnim(){
+  if(anim){cancelAnimationFrame(anim.id); scene.remove(anim.grp); anim.grp.traverse(o=>{if(o.geometry)o.geometry.dispose();}); anim=null;}
+}
+function playPath(mode){
+  stopAnim();
+  const P=PAIRS[curPair];
+  const path=mode==='3d'?route3D(P.src,P.dst):route6D(P.src,P.dst);
+  const grp=new THREE.Group(); const spheres=[];
+  path.forEach(p=>{
+    const s=new THREE.Mesh(new THREE.SphereGeometry(.36,12,12), new THREE.MeshLambertMaterial({color:mode==='3d'?PATH3:PATH6}));
+    s.position.copy(chipWorld(p.x,p.y,p.z,p.r,p.s,p.t));
+    grp.add(s); spheres.push(s);
+  });
+  grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(path.map(p=>chipWorld(p.x,p.y,p.z,p.r,p.s,p.t))), new THREE.LineBasicMaterial({color:mode==='3d'?PATH3:PATH6})));
+  scene.add(grp);
+  const total=path.length-1; let hop=0, last=0;
+  const lab=document.getElementById('alab'), cnt=document.getElementById('acnt'), pb=document.getElementById('pbar');
+  const step=(now)=>{
+    if(now-last>170){
+      last=now;
+      spheres.forEach((s,i)=>s.visible=i<=hop);
+      pb.style.width=(hop/total*100)+'%';
+      cnt.textContent=`第 ${hop} / ${total} 跳`;
+      lab.textContent=(mode==='3d'?'3D 路径':'6D 路径')+' · '+P.name;
+      if(hop>=total){
+        document.getElementById('anote').innerHTML = mode==='3d'
+          ? `<b style="color:#185fa5">3D 到达：${total} 跳。</b>16 宽环每维最多半环 8 跳；跨机架只能沿芯片坐标逐格爬，经过的每个机架边界都是光+OCS 绕回。`
+          : `<b style="color:#d85a30">6D 到达：${total} 跳。</b>4 宽环每维半环仅 2 跳；机架维一跳跨一个机架（同槽位直连光链经 OCS），不必逐芯片爬。`;
+        return;
+      }
+      hop++;
+    }
+    anim.id=requestAnimationFrame(step);
+  };
+  anim={grp,id:null};
+  anim.id=requestAnimationFrame(step);
+}
+
+/* ---------- 拾取 ---------- */
+const ray=new THREE.Raycaster(), mouse=new THREE.Vector2();
+let downXY=null, drag=null;
+renderer.domElement.addEventListener('pointerdown',e=>{auto=false; drag={x:e.clientX,y:e.clientY}; downXY=[e.clientX,e.clientY];});
+renderer.domElement.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  theta+=(e.clientX-drag.x)*.006;
+  phi=Math.max(.15,Math.min(Math.PI-.15,phi-(e.clientY-drag.y)*.006));
+  drag={x:e.clientX,y:e.clientY};
+});
+addEventListener('pointerup',()=>{drag=null;});
+renderer.domElement.addEventListener('pointerup',e=>{
+  if(!downXY||Math.hypot(e.clientX-downXY[0],e.clientY-downXY[1])>6) return;
+  const rect=renderer.domElement.getBoundingClientRect();
+  mouse.x=((e.clientX-rect.left)/rect.width)*2-1;
+  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  ray.setFromCamera(mouse,camera);
+  let hit=null;
+  if(intraGroup){
+    const hits=ray.intersectObjects(intraGroup.children,false)
+      .filter(h=>h.object.userData&&h.object.userData.type==='chip'&&!h.object.userData.hb);
+    if(hits.length) hit=hits[0].object.userData;
+  }
+  if(!hit&&ocsGroup.visible){
+    const hs=ray.intersectObjects(ocsList);
+    if(hs.length) hit={type:'ocs',ax:hs[0].object.userData.ax,a:hs[0].object.userData.a,b:hs[0].object.userData.b,seg:hs[0].object.userData.seg};
+  }
+  if(!hit){
+    const visibleRacks=racks.filter(k=>k.mesh.visible).map(k=>k.mesh);
+    const hs=ray.intersectObjects(visibleRacks);
+    if(hs.length){const k=racks.find(kk=>kk.mesh===hs[0].object); hit={type:'rack',r:k.ix,s:k.iy,t:k.iz};}
+  }
+  select(hit);
+});
+
+/* ---------- UI ---------- */
+window.__select=select;   // 自动化验证钩子
+window.__racks=racks;
+window.__ocsList=ocsList;
+document.getElementById('btnRacks').onclick=()=>{ select(null); };
+document.getElementById('btnOpt').onclick=e=>{ buildOpt(e.target.classList.toggle('on')); };
+document.getElementById('btnOcs').onclick=e=>{ ocsGroup.visible=e.target.classList.toggle('on'); };
+document.getElementById('btnP3').onclick=e=>{e.target.classList.add('on'); document.getElementById('btnP6').classList.remove('on'); playPath('3d');};
+document.getElementById('btnP6').onclick=e=>{e.target.classList.add('on'); document.getElementById('btnP3').classList.remove('on'); playPath('6d');};
+document.getElementById('btnPairA').onclick=e=>{curPair='A'; e.target.classList.add('on'); document.getElementById('btnPairB').classList.remove('on'); stopAnim(); resetAnimBar();};
+document.getElementById('btnPairB').onclick=e=>{curPair='B'; e.target.classList.add('on'); document.getElementById('btnPairA').classList.remove('on'); stopAnim(); resetAnimBar();};
+function resetAnimBar(){
+  document.getElementById('alab').textContent='就绪';
+  document.getElementById('acnt').textContent='';
+  document.getElementById('pbar').style.width='0%';
+}
+
+/* ---------- 轨道 ---------- */
+let theta=Math.PI/5, phi=Math.PI/3.4, dist=52, auto=true;
+renderer.domElement.addEventListener('wheel',e=>{e.preventDefault(); dist=Math.max(10,Math.min(120,dist+e.deltaY*.03));},{passive:false});
+function tick(){
+  requestAnimationFrame(tick);
+  if(auto&&!drag) theta+=.0016;
+  camera.position.set(dist*Math.sin(phi)*Math.cos(theta), dist*Math.cos(phi), dist*Math.sin(phi)*Math.sin(theta));
+  camera.lookAt(0,0,0);
+  renderer.render(scene,camera);
+}
+tick();
+</script>
+</body>
+</html>

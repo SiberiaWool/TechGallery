@@ -1,0 +1,8 @@
+# 临时验证与截图（不入库）
+_*.cjs
+_chk_*.png
+_verify*.cjs
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini

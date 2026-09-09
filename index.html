@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<html lang="zh-CN" data-page-node-id="0hfJzrp5rpZlTaBCW7DLRl">
+<head data-page-node-id="qiFJNPq04NgJTHiABZRJEL">
+<meta charset="UTF-8" data-page-node-id="4WCZTXm7tHpy4BCsT5qOJ7">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="nGhEwBoeeUoUH1V4WdrHlU">
+<link rel="icon" type="image/svg+xml" href="favicon.svg" data-page-node-id="nXNmtqExvzNqoGUeEkB3zA">
 <title>Tech Gallery · 技术图解馆</title>
 <style>
   :root{
@@ -42,33 +42,33 @@
   #viewer iframe{position:absolute; top:52px; left:0; width:100%; height:calc(100% - 52px); border:0; background:#fff;}
 </style>
 </head>
-<body>
-<header>
-  <h1>Tech Gallery · 技术图解馆</h1>
-  <p>交互式技术图解合集——点击卡片在本页预览，或新标签页全屏查看。所有图解均为自包含单文件，可离线运行。</p>
-  <div class="tags">
-    <span class="chip" id="stat-count">— 篇图解</span>
-    <span class="chip">纯静态 · 无构建</span>
-    <span class="chip">iframe 懒加载</span>
-    <span class="chip" id="stat-update">最近更新 —</span>
+<body data-page-node-id="ADjROOQRDiODLtxjfjUYGQ">
+<header data-page-node-id="2GingG3se1YRAbDcezCUZ1">
+  <h1 data-page-node-id="W2EWBegLD7zwoVxoDNN7bK">Tech Gallery · 技术图解馆</h1>
+  <p data-page-node-id="vDUeFykWV80S8DcCVzI7Bz">交互式技术图解合集——点击卡片在本页预览，或新标签页全屏查看。所有图解均为自包含单文件，可离线运行。</p>
+  <div class="tags" data-page-node-id="Y84KckJFa6EOynb7I9zOSS">
+    <span class="chip" id="stat-count" data-page-node-id="Dvx223Lptdx2zdwn13Hr68">— 篇图解</span>
+    <span class="chip" data-page-node-id="fIyYrZB69JoGv0wYkc0U6E">纯静态 · 无构建</span>
+    <span class="chip" data-page-node-id="hONRAFCFXwmJGiECpXsVO2">iframe 懒加载</span>
+    <span class="chip" id="stat-update" data-page-node-id="IaoAPpo8W949sDTMeXCwpe">最近更新 —</span>
   </div>
 </header>
-<main>
-  <div id="grid"></div>
-  <div id="empty">没有符合条件的图解</div>
+<main data-page-node-id="L3Q0kt8zVFADB5Y6TITacY">
+  <div id="grid" data-page-node-id="FHeQGbdTb6p61GqULc2zct"></div>
+  <div id="empty" data-page-node-id="zYGczgW93gm9DXgYfYeJYg">没有符合条件的图解</div>
 </main>
-<footer>
-  收录规则：每个图解一个文件夹（demos/&lt;id&gt;/index.html），在 registry.js 注册即可出现在本馆。<br>
+<footer data-page-node-id="GOW6EMySDQ6xIRfOJYFZWt">
+  收录规则：每个图解一个文件夹（demos/&lt;id&gt;/index.html），在 registry.js 注册即可出现在本馆。<br data-page-node-id="kp6R6E09d1JLvxyxIv2eNi">
   声明：内容为公开资料整理的技术推演，标注口径与出处，不构成投资建议。
 </footer>
 
-<div id="viewer">
-  <div class="bar">
-    <h3 id="v-title">—</h3>
-    <a id="v-newtab" href="#" target="_blank" rel="noopener">新标签打开 ↗</a>
-    <button id="v-close">关闭 ✕</button>
+<div id="viewer" data-page-node-id="3yU9SCgy74ZH4sp8KIMC26">
+  <div class="bar" data-page-node-id="LSe23oEmoCSLCuiWH00Kql">
+    <h3 id="v-title" data-page-node-id="0bd0kp4j4a7qDgbYCEQDgd">—</h3>
+    <a id="v-newtab" href="#" target="_blank" rel="noopener" data-page-node-id="4f8sAYMS4gh3ygGmodcd93">新标签打开 ↗</a>
+    <button id="v-close" data-page-node-id="ACwjunCTEBJ4vwQEoEcWcV">关闭 ✕</button>
   </div>
-  <iframe id="v-frame" title="图解预览"></iframe>
+  <iframe id="v-frame" title="图解预览" data-page-node-id="jDi3GAfnbiIEuQTTRM6o4b"></iframe>
 </div>
 
 <script>

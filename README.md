@@ -1,7 +1,10 @@
 # Tech Gallery · 技术图解馆
 
-[![在线查看](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E6%9F%A5%E7%9C%8B-Tech%20Gallery-0f6e56?style=for-the-badge&logo=github)](https://你的用户名.github.io/tech-gallery/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-5f5e5a.svg)](LICENSE)
+![在线查看](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E6%9F%A5%E7%9C%8B-Tech%20Gallery-0f6e56?style=for-the-badge\&logo=github)
+
+
+
+![License: MIT](https://img.shields.io/badge/License-MIT-5f5e5a.svg)
 
 交互式技术图解合集——AI 互连、光通信、半导体方向的可视化讲解，纯静态、无构建、可离线运行。
 
@@ -9,8 +12,8 @@
 
 ## 目录
 
-| 图解 | 分类 | 简介 |
-|---|---|---|
+| 图解                                              | 分类          | 简介                                                                  |
+| ----------------------------------------------- | ----------- | ------------------------------------------------------------------- |
 | [6D Torus 交互式 3D 演示](demos/6d-torus/index.html) | AI 互连 · 光通信 | Google TPU v9t 拓扑推演：64 机架全量渲染、12 条 ICI 电光分段、192 台 OCS、3D vs 6D 路径动画 |
 
 ## 仓库结构

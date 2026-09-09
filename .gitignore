@@ -6,3 +6,5 @@ _verify*.cjs
 .DS_Store
 Thumbs.db
 desktop.ini
+# WorkBuddy 工作区内部数据（不上传）
+.workbuddy/

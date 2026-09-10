@@ -54,11 +54,16 @@
   .figure .legend{font-size:11.5px; color:var(--ink3); border-top:1px dashed var(--line); padding-top:10px; margin-top:14px; line-height:1.8;}
   .dot{display:inline-block; width:10px; height:10px; border-radius:2px; vertical-align:middle; margin:0 4px 0 10px;}
 
+  .back-home{display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--teal); font-weight:600; text-decoration:none; border:1px solid var(--line); border-radius:7px; padding:6px 12px; background:var(--panel); transition:border-color .15s;}
+  .back-home:hover{border-color:var(--teal);}
+  .back-home .arrow{font-family:Consolas,monospace; font-size:13px;}
+
   footer{max-width:1240px; margin:0 auto; padding:0 36px 40px; font-size:12px; color:var(--ink3); line-height:1.8;}
 </style>
 </head>
 <body>
 <header>
+  <div style="margin-bottom:10px"><a class="back-home" href="../../index.html"><span class="arrow">←</span>返回主页</a></div>
   <h1>光引擎位置演进 · 可插拔光模块 → NPO → CPO</h1>
   <p>同一交换机主板视角下的三种光互连架构：光引擎（OE）从面板侧可插拔模块，逐步迁移至 ASIC 近旁（NPO）、最终进入 ASIC 封装体内部（CPO）。电通道每一次缩短，都换来功耗、密度与可维修性之间的重新权衡。三图同视角、同比例语义，可直接对照。</p>
   <div class="tags">

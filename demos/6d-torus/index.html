@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="../../favicon.svg">
-<title>6D Torus 交互式 3D 演示 · TPU v9t（推演）</title>
+<html lang="zh-CN" data-page-node-id="dYAy2P8dsOBaPW7jPc5gMd">
+<head data-page-node-id="g4Bt2ICJGt08J8jnCIvGDG">
+<meta charset="UTF-8" data-page-node-id="90TtrrJOVI31bnPxxBuG8i">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="DVkrSVgWHyqYfebnG2XwFH">
+<link rel="icon" type="image/svg+xml" href="../../favicon.svg" data-page-node-id="ClxMk5YUSosg8iSrgm88JE">
+<title>从TPU到POD交互式3D演示 · 3D/6D Torus</title>
 <style>
   :root{
     --bg:#f7f7f5; --panel:#ffffff; --ink:#26215c; --ink2:#5f5e5a; --ink3:#888780;
@@ -18,6 +18,7 @@
   canvas{display:block;}
   #hint{position:absolute; left:14px; bottom:12px; font-size:12px; color:var(--ink3); background:rgba(255,255,255,.85); border:1px solid var(--line); border-radius:6px; padding:6px 10px; pointer-events:none; max-width:70%;}
   #title{position:absolute; left:14px; top:12px; pointer-events:none;}
+  #title button{pointer-events:auto;}   /* 模式切换按钮穿透标题层的点击屏蔽 */
   #title h1{font-size:16px; font-weight:600; color:var(--ink); letter-spacing:.5px;}
   #title p{font-size:12px; color:var(--ink2); margin-top:2px;}
   #legend{position:absolute; right:14px; top:12px; background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:12px; color:var(--ink2); line-height:1.95; pointer-events:none;}
@@ -46,7 +47,7 @@
   #selcard .addr{font-family:Consolas,monospace; background:#fff; border:1px solid var(--line); border-radius:5px; padding:1px 6px; display:inline-block; margin:2px 0; font-size:11px;}
   #selcard h4{font-size:11px; font-weight:600; color:var(--teal); margin:8px 0 3px;}
   .tag{display:inline-block; font-size:10px; border-radius:4px; padding:0 5px; margin-left:4px; vertical-align:1px;}
-  .tag.cu{background:var(--coral-l); color:var(--coral);}
+  .tag.cu{background:#faece7; color:#c2571f;}
   .tag.op{background:var(--blue-l); color:var(--blue);}
   #animbar{background:#fbfaf7;}
   #progress{height:4px; background:#e7e5dd; border-radius:2px; margin-top:10px; overflow:hidden;}
@@ -54,70 +55,54 @@
   .mono{font-family:Consolas,monospace;}
 </style>
 </head>
-<body>
-<div id="app">
-  <div id="stage">
-    <div id="title"><h1>6D Torus 交互式 3D 演示</h1><p>TPU v9t 拓扑推演 · 4⁶ = 4096 卡 · 192 台 OCS 常驻（每环绕段 1 台）· 谷歌未官宣</p></div>
-    <div id="legend">
-      <b style="color:var(--ink)">图例</b><br>
-      <span class="dot" style="background:#0f6e56"></span>选中 TPU / 机架<br>
-      <span class="dot" style="background:#d85a30"></span>电链路（铜 · PCB/DAC 电气信号）<br>
-      <span class="dot" style="background:#3266ad"></span>光链路（光纤 · 经 OCS）<br>
-      <span class="dot" style="background:#f0b429; border-radius:50%"></span>光模块（电↔光转换点）<br>
-      <span class="dot" style="background:#8d6bd6"></span>OCS 交换机（常驻 192 台）<br>
-      <span class="dot" style="background:#0f8f8f"></span>光链对端机架<br>
-      <span style="color:#185fa5">— — 虚线 = torus 绕回 ↺</span>
+<body data-page-node-id="0z6tFL2kZsi4OLV9l3Reg5">
+<div id="app" data-page-node-id="SnmtcLWwIyb6tRNdeZlzHy">
+  <div id="stage" data-page-node-id="DiPCLOIYWeQvK0RyqyE6Dr">
+    <div id="title" data-page-node-id="Ohncf1XEkC4oSbMMHyXnRe"><h1 data-page-node-id="69Hzs4fMjUc2nvaW48ZXwC">从TPU到POD交互式3D演示</h1><p id="subtitle" data-page-node-id="R9TN9wpwf2UnG2GF3p0Yep">6D Torus 模式 · TPU v9t 拓扑推演 · 4⁶ = 4096 卡 · 192 台 OCS 常驻（每环绕段 1 台）· 谷歌未官宣</p><div class="btnrow" style="margin-top:8px"><button id="btnMode3D">3D Torus（v4/v7）</button><button id="btnMode6D" class="on">6D Torus（v9t 传）</button></div></div>
+    <div id="legend" data-page-node-id="R88c0FubPCbq5fz3Peyrdl">
+      <b style="color:var(--ink)" data-page-node-id="1B6HPSQe6ZKxpoI1308STA">图例</b><br data-page-node-id="zkSNYBtKDwnWCTfmKOVMNS">
+      <span class="dot" style="background:#0f6e56" data-page-node-id="6R8wwQqxPxXCvGCwBE37bX"></span>选中 TPU / 机架<br data-page-node-id="pPakW0db29zjIswcDYArVe">
+      <span class="dot" style="background:#c2571f" data-page-node-id="w8QGuhj11TswixBsF9bZ5T"></span>柜内 IC 铜缆（逐跳 · PCB/DAC）<br data-page-node-id="DFFyxlBCioAdoxAIfG2QgY">
+      <span class="dot" style="background:#ff8a3d" data-page-node-id="K3vB8oLmN9pQ2rS5tUvWx"></span>出框电段（芯片→面板模块 · 亮橙）<br data-page-node-id="aB9cD1eF2gH3iJ4kL5mN6">
+      <span class="dot" style="background:#3266ad" data-page-node-id="CqdgMlCkYjbIRaImE3EYZx"></span>光链路（光纤 · 经 OCS）<br data-page-node-id="tFMts6UY4Cpn3z2fiLLkFC">
+      <span class="dot" style="background:#f0b429; border-radius:50%" data-page-node-id="NhadbtDJjogPu5TABFWRuO"></span>光模块（电↔光转换点）<br data-page-node-id="SJrqA8ZK24HZpqRCdaG5Zh">
+      <span class="dot" style="background:#0f8f8f" data-page-node-id="fsdwzr1zFdpC6YXSPhMPb5"></span>对端 TPU / 光链对端机架<br data-page-node-id="ssLpdojPEFCK4tajYwsREr">
+      <span style="color:#185fa5" data-page-node-id="hqc6EACAefmvLBuJY1O1YA">— — 虚线 = torus 绕回 ↺</span>
     </div>
-    <div id="hint">点击机架 → 6 向出框光束 + OCS；点击柜内 TPU → 隐藏外壳、12 条 ICI 三段式显示（芯片→光模块→OCS→对端）；点击 OCS 紫盒看其承载的环绕段与端口账；空白处退出</div>
+    <div id="hint" data-page-node-id="E5vLFokF3lqPexXzdLUyjK">点击机架 → 6 向出框光束 + OCS（各平面沿轴向等距退位，便于观察）；点击柜内 TPU → 12 条 ICI 三段式（深橙=柜内 ICI 铜缆，亮橙弓形=出框电段，各一根）；点击 OCS 紫盒看环绕段与端口账；空白处退出复位</div>
   </div>
-  <div id="panel">
-    <div id="info">
-      <div class="sec">
-        <h2>结构分层</h2>
-        <div class="btnrow">
-          <button id="btnRacks" class="on">机架视图（退出聚焦）</button>
-          <button id="btnOpt" class="warn">柜间光链全景</button>
-          <button id="btnOcs" class="amber on">OCS 阵列（192 台）</button>
+  <div id="panel" data-page-node-id="QV4aKp5xo8i2tp8qyzTod3">
+    <div id="info" data-page-node-id="kKZv3mjDgFVWUU7eirmft7">
+      <div class="sec" data-page-node-id="BIiD5LVMLXlyfNYxmKhCrL">
+        <h2 data-page-node-id="5areI8iJXinJvNRoaLDLUI">结构分层</h2>
+        <div class="btnrow" data-page-node-id="u9NxidJrYyU9IQZuoZSdru">
+          <button id="btnRacks" class="on" data-page-node-id="TELGILOu5OuW30HsvL9Ltn">机架视图（退出聚焦）</button>
+          <button id="btnOpt" class="warn" data-page-node-id="4LUGywkyzUDA8yG1z55e3h">完整 Pod 绘制（4096 TPU + 全链路）</button>
+          <button id="btnOcs" class="amber on" data-page-node-id="9MPCB56GSjblszFpq0Rul1">OCS 阵列（192 台）</button>
         </div>
-        <p class="note"><b>OCS 阵列</b>常驻显示：每"环绕段"1 台（128 口）= 3 维 × 16 环平面 × 4 段 = 192 台（推演口径，v4 为 48 台 ×128 口）。台数随端口规格演进可折减：320 口 → 96 台，640+ 口 → 48 台。<b>柜间光链全景</b>：r 维全量 4096 条。聚焦时临时隐藏，退出恢复。</p>
+        <p class="note" data-page-node-id="D2mG4boF3yJf1Ey79zwTbz"><b data-page-node-id="tr0EEx6GyT70x879dTJjzH">完整 Pod 绘制</b>：柜内三向铜网格（深橙，每架 144 直连 + 48 绕回折线，不穿墙）+ 三轴全量柜间光链 12288 条（蓝，经 192 台 OCS，绕回走环外车道）+ 4096 颗 TPU 点云。<b data-page-node-id="Buv8pJsWzSqrizSNLpEVMb">OCS 阵列</b>常驻：每段 1 台（128 口）= 3 维 × 16 环平面 × 4 段。聚焦时临时隐藏，退出恢复。</p>
       </div>
-      <div class="sec">
-        <h2>3D vs 6D 路径对比动画</h2>
-        <div class="btnrow" style="margin-bottom:8px">
-          <button id="btnPairA" class="on">对角线对（24 vs 12 跳）</button>
-          <button id="btnPairB">同槽位·机架+2（24 vs 6 跳）</button>
-        </div>
-        <div class="btnrow">
-          <button id="btnP3" class="blue">播放 3D 路径</button>
-          <button id="btnP6" class="warn on">播放 6D 路径</button>
-        </div>
-        <div id="animbar" style="margin-top:10px; border:1px solid var(--line); border-radius:10px; padding:10px 12px;">
-          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--ink3); margin-bottom:4px;"><span id="alab">就绪</span><span id="acnt"></span></div>
-          <div id="progress"><div id="pbar"></div></div>
-          <p class="note" id="anote" style="margin-top:8px">同槽位对最能体现差异：源与目的柜内坐标完全相同、只差机架号——3D 必须沿芯片坐标逐格爬 24 跳；6D 沿机架维每跳跨一个机架（同槽位直连光链），6 跳直达。均为逐维最短环路路由。</p>
-        </div>
-      </div>
-      <div class="sec">
-        <h2>参数速览</h2>
-        <table>
-          <tr><th></th><th>3D Torus（v4/v7）</th><th>6D Torus（v9t 传）</th></tr>
-          <tr><td class="em">拓扑</td><td>16×16×16</td><td>4×4×4×4×4×4</td></tr>
-          <tr><td class="em">每芯片 ICI</td><td>6 条</td><td style="color:var(--teal);font-weight:600">12 条</td></tr>
-          <tr><td class="em">网络直径</td><td>24 跳</td><td style="color:var(--teal);font-weight:600">12 跳</td></tr>
-          <tr><td class="em">每机架出框光</td><td>96 条</td><td style="color:var(--coral);font-weight:600">384 端口（64×6）</td></tr>
-          <tr><td class="em">OCS 端口配比</td><td>1:1.5</td><td style="color:var(--coral);font-weight:600">1:6（×4）</td></tr>
-          <tr><td class="em">二分带宽</td><td>基准</td><td style="color:var(--teal);font-weight:600">×4</td></tr>
+      <div class="sec" data-page-node-id="EGsUvX4loymMwJojj2qi5r">
+        <h2 data-page-node-id="ebxAlNSbyXYCZSKX9BrH86">参数速览</h2>
+        <table data-page-node-id="mc0a1OAaPX3quDwAIDYw50">
+          <tr data-page-node-id="xI0wrbB79fX4Leio0IDLf7"><th data-page-node-id="jHiX4WQih4rnjJjbXH5e4r"></th><th data-page-node-id="ndDV6xbS43JJHl9A4jNPCv">3D Torus（v4/v7）</th><th data-page-node-id="mMEbuhgc6eGViW2qMMp5uI">6D Torus（v9t 传）</th></tr>
+          <tr data-page-node-id="jQnXN25DjqyfoCeM4gkRqt"><td class="em" data-page-node-id="tpHLDucW3sD6941GaAdItJ">拓扑</td><td data-page-node-id="CbjRH97KnDiJfAKF4z5J9O">16×16×16</td><td data-page-node-id="ktHYfu4ZFDUC0WuveuXfnU">4×4×4×4×4×4</td></tr>
+          <tr data-page-node-id="6rOtqabhYdP03fNMVM59mo"><td class="em" data-page-node-id="gXX0ku61JEd5vHh3h5AaIX">每芯片 ICI</td><td data-page-node-id="jb8tL7YEKOPRuBEZWGuxsl">6 条</td><td style="color:var(--teal);font-weight:600" data-page-node-id="lUdSSQ9CxEM9xDBSL6AYCV">12 条</td></tr>
+          <tr data-page-node-id="jlON4LxA1sEmFAIprGPD6F"><td class="em" data-page-node-id="VfgIWClkS919re9CBGhBrB">网络直径</td><td data-page-node-id="vZL9KmU0lu51smT8zR2BTa">24 跳</td><td style="color:var(--teal);font-weight:600" data-page-node-id="IoS4hK93GUL1uI6OHUW4hH">12 跳</td></tr>
+          <tr data-page-node-id="XiTiPaWtUOipJf5sPMRFCl"><td class="em" data-page-node-id="2OhkivvHXhuyvaCe2Rwq9E">每机架出框光</td><td data-page-node-id="Oo0S2JoJkbCdsGqfCZZ0SU">96 条</td><td style="color:var(--coral);font-weight:600" data-page-node-id="IltP5TmQNvll8DA5qEZiyg">384 端口（64×6）</td></tr>
+          <tr data-page-node-id="aN3l37xbpAkBTEtFKBJRes"><td class="em" data-page-node-id="4VCmORUvqdxEi7aBwxPKSW">OCS 端口配比</td><td data-page-node-id="qsweLbptW1QZhOC8jxhJ8q">1:1.5</td><td style="color:var(--coral);font-weight:600" data-page-node-id="p22YS7XBUdKcC5nF279CGA">1:6（×4）</td></tr>
+          <tr data-page-node-id="ON77HdMbRyEiIUDfKkq9HE"><td class="em" data-page-node-id="vrZPoslVJ6OOQy5u0pMCX1">二分带宽</td><td data-page-node-id="7Q3DHXxhNRMbFzQUS7dofN">基准</td><td style="color:var(--teal);font-weight:600" data-page-node-id="P4uOcxoIfuVDmJmy7OupuR">×4</td></tr>
         </table>
-        <p class="note">口径注：×4 为 SemiAnalysis OCS 端口口径；国内卖方按 2.4T 模块折算配比 ×2、800G 当量 ×5–6。直径=最坏端点对跳数；环距=环长一半（16 环→8 跳/维，4 环→2 跳/维）。</p>
+        <p class="note" data-page-node-id="noGzDpGfHt18KGh0W07CKY">口径注：×4 为 SemiAnalysis OCS 端口口径；国内卖方按 2.4T 模块折算配比 ×2、800G 当量 ×5–6。直径=最坏端点对跳数；环距=环长一半（16 环→8 跳/维，4 环→2 跳/维）。</p>
       </div>
-      <div class="sec" style="border-bottom:none">
-        <h2>选中详情</h2>
-        <div id="selcard">
-          <h3 id="seltitle">—</h3>
-          <p id="selbody">—</p>
-          <div id="seltable"></div>
+      <div class="sec" style="border-bottom:none" data-page-node-id="8JIftIow31lVizyTHUZcx0">
+        <h2 data-page-node-id="1ZL12rbGRBxdMaDFzLlmAF">选中详情</h2>
+        <div id="selcard" data-page-node-id="xRnxD9hvqdsAfKbL6LxjEh">
+          <h3 id="seltitle" data-page-node-id="eo8KJpEPt6MmVC3uHtuChH">—</h3>
+          <p id="selbody" data-page-node-id="gkoZ3hcGofXmo5gC4VPwF0">—</p>
+          <div id="seltable" data-page-node-id="HOYVeQaXYMo314FGa98oDH"></div>
         </div>
-        <p class="note" id="selhint" style="margin-top:8px">尚未选中：点击机架 / 柜内 TPU / 紫色 OCS 盒体，此处展开拓扑计算、连接方式与介质明细。</p>
+        <p class="note" id="selhint" style="margin-top:8px" data-page-node-id="KTf4zMYkIzw5YNannhvFjf">尚未选中：点击机架 / 柜内 TPU / 紫色 OCS 盒体，此处展开拓扑计算、连接方式与介质明细。</p>
       </div>
     </div>
   </div>
@@ -129,7 +114,7 @@
 import * as THREE from 'three';
 
 const R=4, C=4;
-const SPACING_R=6, SPACING_C=1.55;
+const SPACING_R=8.5, SPACING_C=1.55;   // 机架间距加大：壳 5.4 + 3.1 通道，容纳双方面板模块排与 OCS
 const scene=new THREE.Scene();
 const PANEL_W=436;
 const camera=new THREE.PerspectiveCamera(48, (innerWidth-PANEL_W)/innerHeight, .1, 2000);
@@ -140,7 +125,7 @@ document.getElementById('stage').appendChild(renderer.domElement);
 addEventListener('resize',()=>{camera.aspect=(innerWidth-PANEL_W)/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth-PANEL_W,innerHeight);});
 scene.add(new THREE.AmbientLight(0xffffff,.85));
 const dl=new THREE.DirectionalLight(0xffffff,.9); dl.position.set(30,50,20); scene.add(dl);
-const grid=new THREE.GridHelper(120,24,0xd9d7cd,0xe8e6df); grid.position.y=-22; scene.add(grid);
+/* 地板网格已移除（影响观察） */
 
 /* ---------- 材质 ---------- */
 const rackGeo=new THREE.BoxGeometry(5.4,5.4,5.4);
@@ -154,18 +139,49 @@ const chipGeo=new THREE.BoxGeometry(.5,.5,.5);
 const chipMat=new THREE.MeshLambertMaterial({color:0x9aa2ad});
 const chipDimMat=new THREE.MeshLambertMaterial({color:0xb9bec7, transparent:true, opacity:.45});
 const chipHiMat=new THREE.MeshLambertMaterial({color:0x0f6e56});
-const copperMat=new THREE.LineBasicMaterial({color:0x9aa2ad, transparent:true, opacity:.5});
-const fiberMat=new THREE.LineBasicMaterial({color:0xd85a30, transparent:true, opacity:.26});
-const CU=0xd85a30, OP=0x3266ad, FIB=0x3266ad, ELE=0xd85a30;   // v5：电=橙、光=蓝
+const chipNbMat=new THREE.MeshLambertMaterial({color:0x0f8f8f, emissive:0x062f2f});   // 对端 TPU（ICI 落点）
+const copperMat=new THREE.LineBasicMaterial({color:0xc2571f, transparent:true, opacity:.42});
+const fiberMat=new THREE.LineBasicMaterial({color:0x3266ad, transparent:true, opacity:.26});
+const OP=0x3266ad, FIB=0x3266ad;              // 光=蓝
+const ELE=0xff8a3d;                           // 芯片→面板模块直连铜缆（亮橙 · 出框电段）
+const CU_IC=0xc2571f;                         // 柜内 IC 逐跳铜缆（深橙）
 const OCS_COLOR=0x8d6bd6, OCS_HI=0x5b3fa0;
 const PATH3=0x5b3fa0, PATH6=0x0b7a4b;   // 动画路径色（避开介质色）
 
 /* ---------- 坐标 ---------- */
-const rackPos=(r,s,t)=>new THREE.Vector3((r-1.5)*SPACING_R,(s-1.5)*SPACING_R,(t-1.5)*SPACING_R);
+let focusShift=null;                                  // 选中机架 → 各平面沿轴向按环序退位（网格爆炸）
+const SHIFT_AMT=4;
+function rackShiftOf(r,s,t){
+  if(!focusShift) return null;
+  const sh=new THREE.Vector3((r-focusShift.r)*SHIFT_AMT,(s-focusShift.s)*SHIFT_AMT,(t-focusShift.t)*SHIFT_AMT);
+  return sh.lengthSq()===0? null : sh;
+}
+function applyRackShifts(){
+  racks.forEach(k=>{ k.mesh.position.copy(rackPos(k.ix,k.iy,k.iz)); k.edges.position.copy(k.mesh.position); });
+  ocsList.forEach(m=>{                                // OCS 随段两端平面位移同步刷新
+    const c=ocsCenterOf(m.userData.ax,m.userData.a,m.userData.b,m.userData.seg);
+    m.position.copy(c); m.userData.center.copy(c);
+  });
+  if(optGroup){                                       // 全景层坐标已变，重建（罕见路径：爆炸态下切全景）
+    const on=optGroup.visible;
+    buildOpt(false); buildOpt(true);
+    optGroup.visible=on;
+  }
+}
+function sceneExtent(){                                // 当前机架包络（含爆炸位移），供车道避让
+  let m=SPACING_R*1.5+2.7;
+  racks.forEach(k=>{ const p=k.mesh.position;
+    m=Math.max(m, Math.abs(p.x)+2.7, Math.abs(p.y)+2.7, Math.abs(p.z)+2.7); });
+  return m;
+}
+const rackBase=(r,s,t)=>new THREE.Vector3((r-1.5)*SPACING_R,(s-1.5)*SPACING_R,(t-1.5)*SPACING_R);
+const rackPos=(r,s,t)=>{ const p=rackBase(r,s,t); const sh=rackShiftOf(r,s,t); if(sh)p.add(sh); return p; };
 const chipLocal=(x,y,z)=>new THREE.Vector3((x-1.5)*SPACING_C,(y-1.5)*SPACING_C,(z-1.5)*SPACING_C);
 const chipWorld=(x,y,z,r,s,t)=>chipLocal(x,y,z).add(rackPos(r,s,t));
 const wrap4=i=>((i%4)+4)%4;
+const wrap16=i=>((i%16)+16)%16;
 const AXIS_OF={r:0,s:1,t:2,x:0,y:1,z:2};   // r/x→场景X, s/y→Y, t/z→Z
+const CHIP_OF=['x','y','z'];                // 场景轴→芯片坐标名（槽位投影用）
 
 /* ---------- 机架群 ---------- */
 const racks=[]; const rackIndex={};
@@ -186,6 +202,15 @@ function setRackStyle(r,s,t,mode){
 }
 function resetRackStyles(){ racks.forEach(k=>{k.mesh.visible=true; k.edges.visible=true; k.mesh.material=rackMat; k.edges.material=rackEdgeMat;}); }
 
+/* ---------- 模式架构：6D（v9t 推演） / 3D（v4/v7）——声明必须在 buildOCSArray() 之前 ---------- */
+let MODE='6d';
+const MODE_TEXT={
+  '6d':{sub:'6D Torus 模式 · TPU v9t 拓扑推演 · 4⁶ = 4096 卡 · 192 台 OCS 常驻（每环绕段 1 台）· 谷歌未官宣',
+        ocsBtn:'OCS 阵列（192 台）', hint:'点击机架 → 6 向出框光束 + OCS（各平面沿轴向等距退位，便于观察）；点击柜内 TPU → 12 条 ICI 三段式（深橙=柜内 ICI 铜缆，亮橙弓形=出框电段，各一根）；点击 OCS 紫盒看环绕段与端口账；空白处退出复位'},
+  '3d':{sub:'3D Torus 模式 · TPU v4/v7 口径 · 16×16×16 = 4096 卡 · 48 台 OCS（轴×面槽位全局配线） · 仅面芯片有光模块',
+        ocsBtn:'OCS 阵列（48 台）', hint:'点击机架 → 出框光束（仅面芯片，每向 16 模块）；点击柜内 TPU → 6 条 ICI（柜内铜 + 面芯片经光模块出框）；点击 OCS 看环平面配线；空白处退出'}
+};
+
 /* ---------- OCS 阵列：每环绕段 1 台（128 口）= 3 维 × 16 平面 × 4 段 = 192 台（常驻） ---------- */
 const ocsGeo=new THREE.BoxGeometry(1.15,.68,1.15);
 const ocsMat=new THREE.MeshLambertMaterial({color:OCS_COLOR, transparent:true, opacity:.85});
@@ -194,33 +219,64 @@ const ocsGroup=new THREE.Group();
 const ocsList=[];
 const DIM_OFFSET={r:[0,.45,.45], s:[.45,0,.45], t:[.45,.45,0]};   // 各维微错位避免同点重叠
 function ocsCenterOf(ax,a,b,seg){
+  if(MODE==='3d'){
+    /* v4/v7：48 台全局共享配线架（OCS Axis,i,j——输入=全 Cluster 各 Cube +面 (i,j) 槽芯片，输出=−面同槽）。
+       摆位=6D 绕回段 OCS 同款语言：每轴 16 台（4×4 网格）悬挑在该轴最外层（3 层）机架之外的环外侧，
+       槽位 直接对齐机架格（rackPos 跟随爆炸），三轴三面互不相交 */
+    const rc={r:0,s:0,t:0};
+    const latA={r:'s', s:'r', t:'r'}[ax];
+    const latB={r:'t', s:'t', t:'s'}[ax];
+    rc[latA]=a; rc[latB]=b; rc[ax]=3;
+    const c=rackPos(rc.r,rc.s,rc.t).clone();
+    c.setComponent(AXIS_OF[ax], c.getComponent(AXIS_OF[ax])+SPACING_R*.55);
+    return c;
+  }
+  /* 6D：段两端机架（ax 维 seg 与 wrap4(seg+1)，平面坐标 a,b）——直接用 rackPos，三轴位移全部继承 */
+  const c1={r:0,s:0,t:0}, c2={r:0,s:0,t:0};
+  c1[ax]=seg; c2[ax]=(seg+1)%4;
+  const latA = ax==='r'?'s' : ax==='s'?'r' : 'r';
+  const latB = ax==='r'?'t' : ax==='s'?'t' : 's';
+  c1[latA]=a; c1[latB]=b; c2[latA]=a; c2[latB]=b;
+  const p1=rackPos(c1.r,c1.s,c1.t), p2=rackPos(c2.r,c2.s,c2.t);
+  const mid=p1.clone().add(p2).multiplyScalar(.5);
   const axisIdx=AXIS_OF[ax];
-  const fromP=(seg-1.5)*SPACING_R;
-  const toP=((seg+1)%4-1.5)*SPACING_R;
-  const along = seg===3 ? fromP+5.2 : (fromP+toP)/2;   // 绕回段 OCS 悬挑在环外（长缆交换）
-  const c=new THREE.Vector3();
-  const others=[0,1,2].filter(i=>i!==axisIdx);
-  c.setComponent(others[0],(a-1.5)*SPACING_R);
-  c.setComponent(others[1],(b-1.5)*SPACING_R);
-  c.setComponent(axisIdx, along);
+  if(seg===3) mid.setComponent(axisIdx, p1.getComponent(axisIdx)+SPACING_R*.55);   // 绕回段：悬挑在 seg=3 层外侧面之外
   const off=DIM_OFFSET[ax];
-  c.x+=off[0]; c.y+=off[1]; c.z+=off[2];
-  return c;
+  mid.x+=off[0]; mid.y+=off[1]; mid.z+=off[2];
+  return mid;
 }
 function buildOCSArray(){
-  ['r','s','t'].forEach(ax=>{
-    for(let a=0;a<R;a++)for(let b=0;b<R;b++)for(let seg=0;seg<4;seg++){
-      const c=ocsCenterOf(ax,a,b,seg);
-      const mesh=new THREE.Mesh(ocsGeo,ocsMat);
-      mesh.position.copy(c);
+  ocsList.forEach(m=>{ocsGroup.remove(m); m.geometry.dispose();});
+  ocsList.length=0;
+  if(MODE==='3d'){
+    /* v4/v7：48 台全局共享配线架——每轴 16 台（4×4 槽位），悬于机架层间隙（轴向=中央间隙、横向对齐机架格） */
+    ['r','s','t'].forEach((ax,axi)=>{
       const axisIdx=AXIS_OF[ax];
-      if(axisIdx===0) mesh.rotation.z=Math.PI/2;
-      if(axisIdx===2) mesh.rotation.x=Math.PI/2;
-      mesh.userData={type:'ocs', ax, a, b, seg, center:c.clone(), axisIdx};
-      ocsGroup.add(mesh);
-      ocsList.push(mesh);
-    }
-  });
+      for(let a=0;a<R;a++)for(let b=0;b<R;b++){
+        const c=ocsCenterOf(ax,a,b,3);
+        const mesh=new THREE.Mesh(ocsGeo,ocsMat);
+        mesh.position.copy(c);
+        if(axisIdx===0) mesh.rotation.z=Math.PI/2;
+        if(axisIdx===2) mesh.rotation.x=Math.PI/2;
+        mesh.userData={type:'ocs', ax, a, b, seg:3, center:c.clone(), axisIdx};
+        ocsGroup.add(mesh); ocsList.push(mesh);
+      }
+    });
+  } else {
+    ['r','s','t'].forEach(ax=>{
+      for(let a=0;a<R;a++)for(let b=0;b<R;b++)for(let seg=0;seg<4;seg++){
+        const c=ocsCenterOf(ax,a,b,seg);
+        const mesh=new THREE.Mesh(ocsGeo,ocsMat);
+        mesh.position.copy(c);
+        const axisIdx=AXIS_OF[ax];
+        if(axisIdx===0) mesh.rotation.z=Math.PI/2;
+        if(axisIdx===2) mesh.rotation.x=Math.PI/2;
+        mesh.userData={type:'ocs', ax, a, b, seg, center:c.clone(), axisIdx};
+        ocsGroup.add(mesh);
+        ocsList.push(mesh);
+      }
+    });
+  }
   scene.add(ocsGroup);
 }
 buildOCSArray();
@@ -259,9 +315,18 @@ function dashLine(a,b,color,dash,gap,radius){
   return g;
 }
 function makeOpticalModule(pos){
-  const m=new THREE.Mesh(new THREE.SphereGeometry(.26,12,12), new THREE.MeshLambertMaterial({color:0xf0b429, emissive:0x4a3a05}));
+  const m=new THREE.Mesh(new THREE.SphereGeometry(.13,10,10), new THREE.MeshLambertMaterial({color:0xf0b429, emissive:0x4a3a05}));
   m.position.copy(pos);
   return m;
+}
+/* 绕回长缆走线：两端点 → 机架间隙通道 → 环外车道（laneAxis）→ 对端，全程避让机架/OCS */
+function wrapLanePoints(a, b, axisIdx, rackHalf, sgn){
+  const laneAxis = axisIdx!==1 ? 1 : 0;                    // 逃逸轴：非垂直维走顶/底，垂直维走侧面
+  const lane = (sceneExtent()+1.5)*sgn(a.getComponent(laneAxis));
+  const adj = p => Math.abs(p)>sceneExtent() ? (sceneExtent()+.9)*sgn(p) : p;   // 端点在 OCS 悬挑带旁则外推
+  const P1=a.clone(); P1.setComponent(axisIdx, adj(a.getComponent(axisIdx))); P1.setComponent(laneAxis, lane);
+  const P2=b.clone(); P2.setComponent(axisIdx, adj(b.getComponent(axisIdx))); P2.setComponent(laneAxis, lane);
+  return [P1,P2];
 }
 function makeOCSMark(pos,hi){
   const g=new THREE.Group();
@@ -274,12 +339,15 @@ function makeOCSMark(pos,hi){
 
 /* ---------- 柜内芯片展开 ---------- */
 let intraGroup=null;
-function buildIntra(r,s,t,withGrid=true){
+function buildIntra(r,s,t,withGrid=true, hiChip=null, nbChips=[]){
   clearIntra();
   const g=new THREE.Group(); const pts=[];
+  const nbSet=new Set(nbChips.map(n=>n.x+','+n.y+','+n.z));
   for(let x=0;x<C;x++)for(let y=0;y<C;y++)for(let z=0;z<C;z++){
     const p=chipWorld(x,y,z,r,s,t);
+    const isNb=nbSet.has(x+','+y+','+z);
     const m=new THREE.Mesh(chipGeo, withGrid?chipMat:chipDimMat); m.position.copy(p);
+    if(isNb){ m.material=chipNbMat; m.scale.setScalar(1.45); }
     m.userData={type:'chip',x,y,z,r,s,t};
     g.add(m);
     const hitbox=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.1,1.1), new THREE.MeshBasicMaterial({visible:false}));
@@ -301,22 +369,110 @@ function clearIntra(){
   if(intraGroup){scene.remove(intraGroup); intraGroup.traverse(o=>{if(o.geometry)o.geometry.dispose();}); intraGroup=null;}
 }
 
-/* ---------- 柜间光链全景层 ---------- */
+/* ---------- 完整 Pod 全景层：柜内铜网格 + 三轴全量柜间光链 ---------- */
 let optGroup=null;
+const panFibMat=new THREE.LineBasicMaterial({color:0x3266ad, transparent:true, opacity:.16});
+const panCuMat=new THREE.LineBasicMaterial({color:0xc2571f, transparent:true, opacity:.22});
+function wrapIntraPts(a,b,axisIdx,rackCenter,pts){        // 柜内绕回：出面→侧走廊→对面（不穿芯片阵列）
+  const half=2.7;
+  const d=a.getComponent(axisIdx)>b.getComponent(axisIdx)?1:-1;
+  const o1=a.clone(); o1.setComponent(axisIdx, rackCenter.getComponent(axisIdx)+d*(half+.45));
+  const o2=b.clone(); o2.setComponent(axisIdx, rackCenter.getComponent(axisIdx)-d*(half+.45));
+  const side=(axisIdx+1)%3;
+  const c1=o1.clone(); c1.setComponent(side, rackCenter.getComponent(side)+(half+.5));
+  const c2=o2.clone(); c2.setComponent(side, rackCenter.getComponent(side)+(half+.5));
+  pts.push(a,o1, o1,c1, c1,c2, c2,o2, o2,b);
+}
 function buildOpt(show){
   if(!show){ if(optGroup){scene.remove(optGroup); optGroup.traverse(o=>{if(o.geometry)o.geometry.dispose();}); optGroup=null;} return; }
   if(optGroup) return;
-  const g=new THREE.Group(); const pts=[];
+  const g=new THREE.Group();
+  const cuPts=[], fibPts=[];
+  const ocsCache=new Map();
+  const ocsAt=(ax,pa,pb,seg)=>{
+    const k=ax+'|'+pa+'|'+pb+'|'+seg;
+    if(!ocsCache.has(k)) ocsCache.set(k, ocsCenterOf(ax,pa,pb,seg));
+    return ocsCache.get(k);
+  };
   for(let r=0;r<R;r++)for(let s=0;s<R;s++)for(let t=0;t<R;t++){
-    for(let x=0;x<C;x++)for(let y=0;y<C;y++)for(let z=0;z<C;z++){
-      pts.push(chipWorld(x,y,z,r,s,t), chipWorld(x,y,z,wrap4(r+1),s,t));
+    const rc=rackPos(r,s,t);
+    if(MODE==='3d'){
+      /* 3D：柜内三向铜（全局 16 环）+ 面芯片出框光纤（四步曼哈顿→环外 OCS，全程不穿机架） */
+      const sgn=v=>v>=0?1:-1;
+      const OUT=sceneExtent()+.9;
+      [['x',0],['y',1],['z',2]].forEach(([cax,axisIdx])=>{
+        const kax=['r','s','t'][axisIdx];
+        const other=['x','y','z'].filter(a=>a!==cax);
+        const slotA=other[0], slotB=other[1];
+        const oAx=[0,1,2].filter(i=>i!==axisIdx);
+        for(let i=0;i<C;i++)for(let j=0;j<C;j++){
+          for(let k=0;k<C-1;k++){
+            const a={x:0,y:0,z:0}; a[cax]=k; a[other[0]]=i; a[other[1]]=j;
+            const b={x:0,y:0,z:0}; b[cax]=k+1; b[other[0]]=i; b[other[1]]=j;
+            cuPts.push(chipWorld(a.x,a.y,a.z,r,s,t), chipWorld(b.x,b.y,b.z,r,s,t));
+          }
+          /* 出框：面芯片（d=+1 侧）→ 自配模块 → 四步曼哈顿（u 出阵列→轴向→v 对齐）→ 环外 OCS(轴|槽 i,j) */
+          const faceChip={x:0,y:0,z:0}; faceChip[cax]=3; faceChip[other[0]]=i; faceChip[other[1]]=j;
+          const fp=chipWorld(faceChip.x,faceChip.y,faceChip.z,r,s,t);
+          const mod=fp.clone(); mod.setComponent(axisIdx, rc.getComponent(axisIdx)+2.7+.4);
+          const ocsP=ocsAt(kax, i, j, 3);
+          const P1=mod.clone(); P1.setComponent(oAx[0], sgn(mod.getComponent(oAx[0]))*OUT);
+          const P2=P1.clone(); P2.setComponent(axisIdx, ocsP.getComponent(axisIdx));
+          const P3=P2.clone(); P3.setComponent(oAx[1], ocsP.getComponent(oAx[1]));
+          cuPts.push(fp,mod);
+          fibPts.push(mod,P1, P1,P2, P2,P3, P3,ocsP);
+        }
+      });
+      continue;                                       // 3D 分支完成，跳过 6D 绘制
     }
-    for(let y=0;y<C;y++)for(let z=0;z<C;z++){
-      pts.push(chipWorld(1,y,z,r,s,t), chipWorld(1,y,z,r,wrap4(s+1),t));
-      pts.push(chipWorld(y,1,z,r,s,t), chipWorld(y,1,z,r,s,wrap4(t+1)));
+    /* 柜内：三向相邻直连 + 绕回折线（每架 144 直连 + 48 绕回） */
+    const dims=[['x',0],['y',1],['z',2]];
+    dims.forEach(([ax,axisIdx])=>{
+      const other=dims.filter(d=>d[0]!==ax);
+      for(let i=0;i<C;i++)for(let j=0;j<C;j++){
+        for(let k=0;k<C-1;k++){
+          const a={x:0,y:0,z:0}, b={x:0,y:0,z:0};
+          a[ax]=k; a[other[0][0]]=i; a[other[1][0]]=j;
+          b[ax]=k+1; b[other[0][0]]=i; b[other[1][0]]=j;
+          cuPts.push(chipWorld(a.x,a.y,a.z,r,s,t), chipWorld(b.x,b.y,b.z,r,s,t));
+        }
+        const a={x:0,y:0,z:0}, b={x:0,y:0,z:0};
+        a[ax]=C-1; a[other[0][0]]=i; a[other[1][0]]=j;
+        b[ax]=0; b[other[0][0]]=i; b[other[1][0]]=j;
+        wrapIntraPts(chipWorld(a.x,a.y,a.z,r,s,t), chipWorld(b.x,b.y,b.z,r,s,t), axisIdx, rc, cuPts);
+      }
+    });
+    /* 柜间：三轴全量（每架每轴 64 条，d=+1 单向；绕回走环外车道折线） */
+    for(let x=0;x<C;x++)for(let y=0;y<C;y++)for(let z=0;z<C;z++){
+      [['r',1,r,s,t,wrap4(r+1),s,t],['s',1,r,s,t,r,wrap4(s+1),t],['t',1,r,s,t,r,s,wrap4(t+1)]].forEach(([ax,dd,fr,fs,ft,nr,ns,nt])=>{
+        const p1=chipWorld(x,y,z,fr,fs,ft);
+        const p2=chipWorld(x,y,z,nr,ns,nt);
+        const [pa,pb]=planeCoordsOfLink(ax,fr,fs,ft);
+        const seg=segOf(fr,dd);
+        const ocsP=ocsAt(ax,pa,pb,seg);
+        const axisIdx=AXIS_OF[ax];
+        const isWrap=(dd===1&&wrap4(fr+1)<fr);
+        if(!isWrap){
+          fibPts.push(p1, ocsP, ocsP, p2);            // 芯片→OCS→对端（OCS 在两架正中，不穿机架）
+        } else {
+          fibPts.push(p1, ocsP);                       // 近端：层3 芯片直达悬挑 OCS（出面即到）
+          const sgn2=v=>v>=0?1:-1;
+          const [P1,P2]=wrapLanePoints(ocsP, p2, axisIdx, 2.7, sgn2);   // 远端：环外车道折线到层0
+          fibPts.push(ocsP,P1, P1,P2, P2,p2);
+        }
+      });
     }
   }
-  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),fiberMat));
+  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(cuPts),panCuMat));
+  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(fibPts),panFibMat));
+  /* 4096 颗 TPU 点云（每颗一个顶点，单 draw call） */
+  const chipCloud=[];
+  for(let r=0;r<R;r++)for(let s=0;s<R;s++)for(let t=0;t<R;t++)
+    for(let x=0;x<C;x++)for(let y=0;y<C;y++)for(let z=0;z<C;z++)
+      chipCloud.push(chipWorld(x,y,z,r,s,t));
+  const cloud=new THREE.Points(new THREE.BufferGeometry().setFromPoints(chipCloud),
+    new THREE.PointsMaterial({color:0x51586b, size:.16, transparent:true, opacity:.75}));
+  g.add(cloud);
   optGroup=g; scene.add(g);
 }
 
@@ -327,17 +483,19 @@ function clearFocus(){
   if(focusHiddenOpt&&optGroup){optGroup.visible=true;}
   ocsList.forEach(m=>m.material=ocsMat);
   focusHiddenOpt=false;
+  focusShift=null; applyRackShifts();          // 撤销爆炸视图
   resetRackStyles();
   auto=true;
 }
-function enterFocus(){
+function enterFocus(r,s,t){
   if(optGroup&&optGroup.visible){optGroup.visible=false; focusHiddenOpt=true;}
+  focusShift={r,s,t}; applyRackShifts();       // 相邻 6 机架外移，降低观察难度
   auto=false;   // OCS 阵列保持可见——它是光链路的实际途经设备
 }
 
-/* 点机架：每向 64 模块球阵列 + 模块→OCS 平行束；绕回长缆走环外大弧 */
+/* 点机架：6D=每向 64 模块球阵列 + 模块↔OCS 束；3D=每向 16 面芯片模块 + 层间隙 OCS */
 function buildRackFocus(r,s,t){
-  clearFocus(); enterFocus();
+  clearFocus(); enterFocus(r,s,t);
   const g=new THREE.Group();
   setRackStyle(r,s,t,'hi');
   const boardGeo=new THREE.BoxGeometry(2.3,.16,2.3);
@@ -346,6 +504,43 @@ function buildRackFocus(r,s,t){
   const modMat=new THREE.MeshLambertMaterial({color:0xf0b429, emissive:0x4a3a05});
   const AXES=[['r',0],['s',1],['t',2]];
   const rackHalf=2.7;
+  if(MODE==='3d'){
+    /* v4/v7：仅面芯片有模块——每向 16 个（面 4×4 芯片各自配 1 个）。
+       OCS 悬于层间隙（轴向=中央间隙、横向对齐机架格），光纤走间隙走廊曼哈顿折线，无穿模、无断线 */
+    AXES.forEach(([ax,axisIdx])=>{
+      const faceChipAx=['x','y','z'][axisIdx];
+      const slotAx=['y','z','x'][axisIdx];
+      const slotBx=['z','x','y'][axisIdx];
+      const rackC=rackPos(r,s,t);
+      [1,-1].forEach(d=>{
+        const other=['x','y','z'].filter(a=>a!==faceChipAx);
+        const ELE_P=[], FIB_P=[];
+        const oAx=[0,1,2].filter(i=>i!==axisIdx);
+        for(let i=0;i<4;i++)for(let j=0;j<4;j++){
+          const fc={x:0,y:0,z:0};
+          fc[faceChipAx]=d>0?3:0;
+          fc[other[0]]=i; fc[other[1]]=j;
+          const fp=chipWorld(fc.x,fc.y,fc.z,r,s,t);
+          const mod=fp.clone(); mod.setComponent(axisIdx, rackC.getComponent(axisIdx)+d*(rackHalf+.4));
+          ELE_P.push(fp,mod);
+          const mm=new THREE.Mesh(modGeo,modMat); mm.position.copy(mod); g.add(mm);
+          const ocs=findOCS(ax, fc[slotAx], fc[slotBx], 3);
+          const ocsP=ocs?ocs.userData.center.clone():rackC.clone();
+          if(ocs) ocs.material=ocsMatHi;
+          const sgn=v=>v>=0?1:-1;
+          const OUT=sceneExtent()+.9;
+          const P1=mod.clone(); P1.setComponent(oAx[0], sgn(mod.getComponent(oAx[0]))*OUT);
+          const P2=P1.clone(); P2.setComponent(axisIdx, ocsP.getComponent(axisIdx));
+          const P3=P2.clone(); P3.setComponent(oAx[1], ocsP.getComponent(oAx[1]));
+          [mod,P1,P2,P3,ocsP].forEach((p,k,arr)=>{ if(k<arr.length-1) FIB_P.push(p,arr[k+1]); });
+        }
+        g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(ELE_P), new THREE.LineBasicMaterial({color:ELE, transparent:true, opacity:.65})));
+        g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(FIB_P), new THREE.LineBasicMaterial({color:FIB, transparent:true, opacity:.8})));
+      });
+    });
+    focusGroup=g; scene.add(g);
+    return;
+  }
   AXES.forEach(([ax,axisIdx])=>{
     [1,-1].forEach(d=>{
       const cur={r,s,t};
@@ -384,39 +579,49 @@ function buildRackFocus(r,s,t){
       const ocs=findOCS(ax,pa,pb,segOf(cur[ax],d));
       const ocsP=ocs?ocs.userData.center.clone():b1.clone().add(b2).multiplyScalar(.5);
       if(ocs) ocs.material=ocsMatHi;
-      // 电段：64 芯片↔模块球
+      // 电段：64 芯片各自直连面板专属模块（每芯片每向 1 模块）；弓形飞线沿 fa 轴分层，避免扇出线叠压
       const ELE_P=[];
       for(let x=0;x<C;x++)for(let y=0;y<C;y++)for(let z=0;z<C;z++){
         const i=x*16+y*4+z;
-        ELE_P.push(chipWorld(x,y,z,r,s,t), modPts1[i]);
-        ELE_P.push(modPts2[i], chipWorld(x,y,z,nr,ns,nt));
+        const p1=chipWorld(x,y,z,r,s,t);
+        const m1=modPts1[i];
+        const mid1=p1.clone().add(m1).multiplyScalar(.5);
+        mid1.setComponent(faceAxes[0], mid1.getComponent(faceAxes[0])+.4);
+        ELE_P.push(p1, mid1); ELE_P.push(mid1, m1);
+        const p2=chipWorld(x,y,z,nr,ns,nt);
+        const m2=modPts2[i];
+        const mid2=p2.clone().add(m2).multiplyScalar(.5);
+        mid2.setComponent(faceAxes[0], mid2.getComponent(faceAxes[0])+.4);
+        ELE_P.push(m2, mid2); ELE_P.push(mid2, p2);
       }
       g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(ELE_P), new THREE.LineBasicMaterial({color:ELE, transparent:true, opacity:.65})));
-      // 光段：平行束进出 OCS 两侧入口；长缆（绕回侧到环外 OCS）走外侧大弧
+      // 光段：近侧直达束贴 OCS 面板；远/绕回侧走环外车道，不穿 OCS 盒与机架阵列
       const FIB_P=[];
-      const axisVec=new THREE.Vector3().setComponent(axisIdx,d);
-      const side1=ocsP.clone().addScaledVector(axisVec,.62);
-      const side2=ocsP.clone().addScaledVector(axisVec,-.62);
-      const needArc1=modPts1[0].distanceTo(side1)>SPACING_R*1.15;
-      const needArc2=modPts2[0].distanceTo(side2)>SPACING_R*1.15;
-      const arcSeg=(a,b)=>{
-        const dist=a.distanceTo(b);
-        const mid=a.clone().add(b).multiplyScalar(.5);
-        const outDir=b.clone().sub(a).normalize();
-        const ctrl=mid.clone().addScaledVector(outDir,0);
-        ctrl.setComponent(faceAxes[0], ctrl.getComponent(faceAxes[0])+SPACING_R*.8);
-        const c=new THREE.QuadraticBezierCurve3(a,ctrl,b);
-        const pts=c.getPoints(12);
-        for(let k=0;k<pts.length-1;k++) FIB_P.push(pts[k],pts[k+1]);
-      };
+      const arcFat=[];
       for(let i=0;i<64;i++){
         const u=(i%8-3.5)/3.5*.42, v=(Math.floor(i/8)-3.5)/3.5*.42;
-        const q1=side1.clone(); q1.setComponent(faceAxes[0],side1.getComponent(faceAxes[0])+u); q1.setComponent(faceAxes[1],side1.getComponent(faceAxes[1])+v);
-        const q2=side2.clone(); q2.setComponent(faceAxes[0],side2.getComponent(faceAxes[0])+u); q2.setComponent(faceAxes[1],side2.getComponent(faceAxes[1])+v);
-        if(needArc1) arcSeg(modPts1[i],q1); else FIB_P.push(modPts1[i],q1);
-        if(needArc2) arcSeg(modPts2[i],q2); else FIB_P.push(modPts2[i],q2);
+        // 近侧（本架）：模块 → OCS 近面板直达（束止于盒面，不越盒）
+        const face1=ocsP.clone().addScaledVector(dir,-.58);
+        face1.setComponent(faceAxes[0],face1.getComponent(faceAxes[0])+u); face1.setComponent(faceAxes[1],face1.getComponent(faceAxes[1])+v);
+        FIB_P.push(modPts1[i], face1);
+        if(!isWrap){
+          // 远侧直达：OCS 远面板 → 对端模块
+          const face2=ocsP.clone().addScaledVector(dir,.58);
+          face2.setComponent(faceAxes[0],face2.getComponent(faceAxes[0])+u); face2.setComponent(faceAxes[1],face2.getComponent(faceAxes[1])+v);
+          FIB_P.push(face2, modPts2[i]);
+        } else {
+          // 绕回：OCS 出口 → 环外车道 → 对端模块（隔段画=虚线感）
+          const exit=ocsP.clone().addScaledVector(dir,.58);
+          exit.setComponent(faceAxes[0],exit.getComponent(faceAxes[0])+u); exit.setComponent(faceAxes[1],exit.getComponent(faceAxes[1])+v);
+          const sgn2=val=>val>=0?1:-1;
+          const [P1,P2]=wrapLanePoints(exit, modPts2[i], axisIdx, rackHalf, sgn2);
+          const c=new THREE.CatmullRomCurve3([exit,P1,P2,modPts2[i]],false,'catmullrom',.12);
+          const pts=c.getPoints(30);
+          for(let k=0;k<pts.length-1;k+=2) arcFat.push([pts[k],pts[k+1]]);
+        }
       }
       g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(FIB_P), new THREE.LineBasicMaterial({color:FIB, transparent:true, opacity:.85})));
+      arcFat.forEach(([p0,p1])=>g.add(fatLine(p0,p1,FIB,.026)));
       setRackStyle(nr,ns,nt,'opt');
     });
   });
@@ -425,27 +630,132 @@ function buildRackFocus(r,s,t){
 
 /* 点芯片：12 条 ICI 三段式 */
 function buildChipFocus(u){
-  clearFocus(); enterFocus();
-  buildIntra(u.r,u.s,u.t,false);
+  clearFocus(); enterFocus(u.r,u.s,u.t);
+  /* 预收集：柜内 6 邻芯片（轻度高亮）+ 相邻 6 Cube 的同槽位对端 TPU（重点高亮） */
+  const nbChips=[];
+  [['x',1],['x',-1],['y',1],['y',-1],['z',1],['z',-1]].forEach(([ax,d])=>{
+    if(MODE==='3d'){
+      /* 3D：全局 16 环——柜内邻居（跨架的不在此高亮，由 3D 分支画对端块） */
+      const G=u.r*4+u[ax], nG=wrap16(G+d);
+      if(Math.floor(nG/4)===u.r){ const c={x:u.x,y:u.y,z:u.z}; c[ax]=nG%4; nbChips.push(c); }
+    } else {
+      const c={x:u.x,y:u.y,z:u.z}; c[ax]=wrap4(c[ax]+d); nbChips.push(c);
+    }
+  });
+  buildIntra(u.r,u.s,u.t,false, u, nbChips);
   setRackStyle(u.r,u.s,u.t,'hide');
   const g=new THREE.Group();
   const selfPos=chipWorld(u.x,u.y,u.z,u.r,u.s,u.t);
   const selfRackPos=rackPos(u.r,u.s,u.t);
   const rackHalf=2.7;
   const rows=[];
-  /* 6 条柜内铜（纯电，两端芯片直连） */
+  /* 相邻 6 Cube 的同槽位对端 TPU：青色放大块（ICI 落点重点）——仅 6D 模式 */
+  const nbRacks=new Map();
+  if(MODE==='6d'){
+    [['r',1],['r',-1],['s',1],['s',-1],['t',1],['t',-1]].forEach(([ax,d])=>{
+      const c={r:u.r,s:u.s,t:u.t}; c[ax]=wrap4(c[ax]+d);
+      nbRacks.set(c.r+','+c.s+','+c.t, c);
+    });
+  }
+  nbRacks.forEach(c=>{
+    const p=chipWorld(u.x,u.y,u.z,c.r,c.s,c.t);
+    const m=new THREE.Mesh(chipGeo, chipNbMat);
+    m.position.copy(p); m.scale.setScalar(1.45);
+    m.userData={type:'chip',x:u.x,y:u.y,z:u.z,r:c.r,s:c.s,t:c.t};   // 可点击
+    g.add(m);
+    const hb=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.1,1.1), new THREE.MeshBasicMaterial({visible:false}));
+    hb.position.copy(p); hb.userData={...m.userData, hb:true};
+    g.add(hb);
+    const eg=new THREE.LineSegments(new THREE.EdgesGeometry(chipGeo), rackEdgeOpt);
+    eg.position.copy(p); eg.scale.setScalar(1.5); g.add(eg);
+  });
+  /* 6 条柜内 ICI（±x/±y/±z）：直连=铜实线；绕回=芯片→面板外光模块→ICI 绕接→对端光模块→芯片 */
   [['x',1],['x',-1],['y',1],['y',-1],['z',1],['z',-1]].forEach(([ax,d])=>{
     const cur={x:u.x,y:u.y,z:u.z};
     const nv=wrap4(cur[ax]+d);
     const isWrap=(d===1&&nv<cur[ax])||(d===-1&&nv>cur[ax]);
     const tgt={...cur}; tgt[ax]=nv;
     const tp=chipWorld(tgt.x,tgt.y,tgt.z,u.r,u.s,u.t);
-    if(isWrap) g.add(dashLine(selfPos,tp,CU,.2,.14,.05));
-    else g.add(fatLine(selfPos,tp,CU,.055));
+    if(isWrap){
+      const axisIdx=AXIS_OF[ax];
+      const faceAx=[0,1,2].filter(i=>i!==axisIdx);
+      const mod1=selfPos.clone(); mod1.setComponent(axisIdx, selfRackPos.getComponent(axisIdx)+d*(rackHalf+.55));
+      mod1.setComponent(faceAx[1], mod1.getComponent(faceAx[1])+.55);   // ICI 模块沿 fb 错位，不与出框模块重叠
+      const mod2=tp.clone();      mod2.setComponent(axisIdx, selfRackPos.getComponent(axisIdx)-d*(rackHalf+.55));
+      mod2.setComponent(faceAx[1], mod2.getComponent(faceAx[1])+.55);
+      const sideAxis=faceAx[1];                         // 走廊轴=fb（与出框弓形抬升轴 fa 错开）
+      const CORR=rackHalf+.35;                          // 面板间隙走廊
+      const P2=mod1.clone(); P2.setComponent(sideAxis, selfRackPos.getComponent(sideAxis)+CORR);
+      const P3=mod2.clone(); P3.setComponent(sideAxis, selfRackPos.getComponent(sideAxis)+CORR);
+      [[selfPos,mod1],[mod1,P2],[P2,P3],[P3,mod2],[mod2,tp]].forEach(([a,b])=>g.add(dashLine(a,b,CU_IC,.11,.09,.022)));
+      g.add(makeOpticalModule(mod1));
+      g.add(makeOpticalModule(mod2));
+    } else {
+      g.add(fatLine(selfPos,tp,CU_IC,.035));
+    }
     const calc=`${ax}${d>0?'+1':'−1'}=${isWrap?'0 mod 4 ↺':nv}`;
-    rows.push({dir:`${d>0?'+':'−'}${ax}`, calc, nb:`(${tgt.x+1},${tgt.y+1},${tgt.z+1}) 本机架`, media:'电', path:'铜直连（柜内 PCB/DAC）', type:'cu', wrap:isWrap});
+    rows.push({dir:`${d>0?'+':'−'}${ax}`, calc, nb:`(${tgt.x+1},${tgt.y+1},${tgt.z+1}) 本机架`, media:'电', path:isWrap?'铜→面板光模块→ICI 绕接→光模块→铜':'铜直连（柜内 PCB/DAC）', type:'cu', wrap:isWrap});
   });
   /* 6 条柜间光（电→光模块→OCS→光模块→电 三段） */
+  if(MODE==='3d'){
+    /* v4/v7：16×16×16 全局环。跨机架邻居仅存在于"面芯片"方向——两端都是面芯片、各配光模块，
+       经全局共享 OCS（轴×面槽位编址，悬于层间隙）转接。光纤走机架间隙走廊曼哈顿折线，全程不穿机架 */
+    const gapRoute=(mod,ocsP,axisIdx)=>{               // 三步曼哈顿（每段一坐标钉自由区，断言 0 穿模）
+      const oAx=[0,1,2].filter(i=>i!==axisIdx);
+      const sgn=v=>v>=0?1:-1;
+      const OUT=sceneExtent()+.9;
+      const P1=mod.clone(); P1.setComponent(oAx[0], sgn(mod.getComponent(oAx[0]))*OUT);  // ① 面内 u 轴滑出阵列包络
+      const P2=P1.clone(); P2.setComponent(axisIdx, ocsP.getComponent(axisIdx));         // ② 沿出线轴到 OCS 轴向（u 已出界）
+      const P3=P2.clone(); P3.setComponent(oAx[1], ocsP.getComponent(oAx[1]));           // ③ v 轴对齐 OCS 槽位（u 仍出界）
+      [mod,P1,P2,P3,ocsP].reduce((p,q)=>{ g.add(fatLine(p,q,FIB,.026)); return q; });
+    };
+    [['x','r'],['y','s'],['z','t']].forEach(([cax,kax])=>{
+      const slotA=['y','z','x'][['x','y','z'].indexOf(cax)];       // 面槽位=另两个芯片坐标
+      const slotB=['z','x','y'][['x','y','z'].indexOf(cax)];
+      [1,-1].forEach(d=>{
+        const G=u.r*4+u[cax], nG=wrap16(G+d);
+        const sameRack=Math.floor(nG/4)===u.r;
+        const axisIdx=AXIS_OF[kax];
+        if(sameRack){
+          const c={x:u.x,y:u.y,z:u.z}; c[cax]=nG%4;
+          const tp=chipWorld(c.x,c.y,c.z,u.r,u.s,u.t);
+          g.add(fatLine(selfPos,tp,CU_IC,.035));
+          rows.push({dir:`${d>0?'+':'−'}${cax}`, calc:`${cax}${d>0?'+1':'−1'}=${nG}（柜内）`, nb:`(${c.x+1},${c.y+1},${c.z+1}) 本机架`, media:'电', path:'铜直连（柜内 PCB/DAC）', type:'cu', wrap:false});
+        } else {
+          /* 跨机架：本芯片即面芯片（该向无柜内邻居）→ 自配模块 → 层间隙 OCS → 对端面芯片 */
+          const nk={r:u.r,s:u.s,t:u.t}; nk[kax]=wrap4(u[kax]+d);
+          const entryLocal={x:u.x,y:u.y,z:u.z}; entryLocal[cax]=d>0?0:3;
+          const entryP=chipWorld(entryLocal.x,entryLocal.y,entryLocal.z,nk.r,nk.s,nk.t);
+          const rackC=rackPos(u.r,u.s,u.t), rackN=rackPos(nk.r,nk.s,nk.t);
+          const mod1=selfPos.clone(); mod1.setComponent(axisIdx, rackC.getComponent(axisIdx)+d*(rackHalf+.4));
+          const mod2=entryP.clone(); mod2.setComponent(axisIdx, rackN.getComponent(axisIdx)-d*(rackHalf+.4));
+          const pa=u[slotA], pb=u[slotB];
+          const ocs=findOCS(kax,pa,pb,3);
+          const ocsP=ocs?ocs.userData.center.clone():rackC.clone().add(rackN).multiplyScalar(.5);
+          if(ocs) ocs.material=ocsMatHi;
+          g.add(fatLine(selfPos,mod1,ELE,.03)); g.add(makeOpticalModule(mod1));
+          gapRoute(mod1,ocsP,axisIdx);
+          gapRoute(mod2,ocsP,axisIdx);                 // 对端模块反向同走廊汇入同一台 OCS
+          g.add(fatLine(mod2,entryP,ELE,.03)); g.add(makeOpticalModule(mod2));
+          const m=new THREE.Mesh(chipGeo, chipNbMat); m.position.copy(entryP); m.scale.setScalar(1.3);
+          m.userData={type:'chip',x:entryLocal.x,y:entryLocal.y,z:entryLocal.z,r:nk.r,s:nk.s,t:nk.t};
+          g.add(m);
+          const hb=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.1,1.1), new THREE.MeshBasicMaterial({visible:false}));
+          hb.position.copy(entryP); hb.userData={...m.userData,hb:true}; g.add(hb);
+          setRackStyle(nk.r,nk.s,nk.t,'opt');
+          const isWrap=(d===1&&nG<G)||(d===-1&&nG>G);
+          rows.push({dir:`${d>0?'+':'−'}${cax}`, calc:`${cax}${d>0?'+1':'−1'}=${nG}${isWrap?' ↺':''}（跨机架）`, nb:`R(${nk.r},${nk.s},${nk.t})·面芯片(${entryLocal.x+1},${entryLocal.y+1},${entryLocal.z+1})`, media:'光电', path:'铜→自配模块→OCS→对端模块→铜', type:'op', wrap:isWrap, ocs:`OCS(${kax}|槽${pa},${pb})`});
+        }
+      });
+    });
+    focusGroup=g; scene.add(g);
+    intraGroup.children.forEach(o=>{
+      if(o.userData&&o.userData.type==='chip'&&!o.userData.hb&&o.userData.x===u.x&&o.userData.y===u.y&&o.userData.z===u.z){
+        o.material=chipHiMat; o.scale.setScalar(1.9);
+      }
+    });
+    return rows;
+  }
   [['r',1],['r',-1],['s',1],['s',-1],['t',1],['t',-1]].forEach(([ax,d])=>{
     const cur={r:u.r,s:u.s,t:u.t};
     const nv=wrap4(cur[ax]+d);
@@ -454,32 +764,43 @@ function buildChipFocus(u){
     const axisIdx=AXIS_OF[ax];
     const nRackPos=rackPos(tgt.r,tgt.s,tgt.t);
     const dir=new THREE.Vector3(); dir.setComponent(axisIdx,d);
-    // 本端：芯片 → 机架面 → 面外光模块
-    const exitFace=selfRackPos.clone().addScaledVector(dir,rackHalf);
-    const mod1=exitFace.clone().addScaledVector(dir,.5);
-    // 对端：光模块 → 机架面 → 同槽位芯片
-    const entryFace=nRackPos.clone().addScaledVector(dir,-rackHalf);
-    const mod2=entryFace.clone().addScaledVector(dir,-.5);
+    const [fa,fb]=[0,1,2].filter(i=>i!==axisIdx);          // 出线面内两轴
+    const chipA=CHIP_OF[fa], chipB=CHIP_OF[fb];
+    const fu=(u[chipA]-1.5)*SPACING_C, fv=(u[chipB]-1.5)*SPACING_C;  // 模块在面板上正对本芯片槽位
+    const mod1=selfRackPos.clone().addScaledVector(dir,rackHalf+.5);
+    mod1.setComponent(fa,mod1.getComponent(fa)+fu); mod1.setComponent(fb,mod1.getComponent(fb)+fv);
+    const mod2=nRackPos.clone().addScaledVector(dir,-(rackHalf+.5));
+    mod2.setComponent(fa,mod2.getComponent(fa)+fu); mod2.setComponent(fb,mod2.getComponent(fb)+fv);
     const tp=chipWorld(u.x,u.y,u.z,tgt.r,tgt.s,tgt.t);
     const [pa,pb]=planeCoordsOfLink(ax,u.r,u.s,u.t);
     const ocs=findOCS(ax,pa,pb,segOf(cur[ax],d));
     const ocsP=ocs?ocs.userData.center.clone():mod1.clone().add(mod2).multiplyScalar(.5);
+    const port1=ocsP.clone().addScaledVector(dir,-.62);   // OCS 本侧入口（朝 mod1）
+    const port2=ocsP.clone().addScaledVector(dir,.62);    // OCS 对侧出口（朝 mod2）
     if(ocs) ocs.material=ocsMatHi;
-    const drawSeg=(a,b,color,rad)=>{ isWrap? g.add(dashLine(a,b,color,.24,.18,rad)) : g.add(fatLine(a,b,color,rad)); };
     const drawFib=(a,b)=>{
-      if(!isWrap){ g.add(fatLine(a,b,FIB,.05)); return; }
       const dist=a.distanceTo(b);
-      const mid=a.clone().add(b).multiplyScalar(.5);
-      const faceAxes=[0,1,2].filter(i=>i!==axisIdx);
-      mid.setComponent(faceAxes[0], mid.getComponent(faceAxes[0])+SPACING_R*1.1);
-      const c=new THREE.QuadraticBezierCurve3(a,mid,b);
-      const pts=c.getPoints(22);
-      for(let k=0;k<pts.length-1;k+=2) g.add(fatLine(pts[k],pts[k+1],FIB,.05));   // 弧形虚线（隔段画=虚线感）
+      if(!isWrap){ g.add(fatLine(a,b,FIB,.026)); return; }
+      if(dist < SPACING_R*2.2){ g.add(dashLine(a,b,FIB,.12,.1,.02)); return; }   // 绕回短接段（OCS 悬挑区旁）
+      // 绕回长缆：机架间隙通道 → 环外车道 → 对端（共享 wrapLanePoints，不穿机架/OCS）
+      const sgn2=val=>val>=0?1:-1;
+      const [P1,P2]=wrapLanePoints(a, b, axisIdx, rackHalf, sgn2);
+      const c=new THREE.CatmullRomCurve3([a,P1,P2,b],false,'catmullrom',.12);
+      const pts=c.getPoints(30);
+      for(let k=0;k<pts.length-1;k+=2) g.add(fatLine(pts[k],pts[k+1],FIB,.026));  // 隔段画=虚线感
     };
-    drawSeg(selfPos,mod1,ELE,.045);      // 电段1：芯片→本端专属模块
-    drawFib(mod1,ocsP);                  // 光纤1：模块→OCS（绕回走环外弧）
-    drawFib(ocsP,mod2);                  // 光纤2：OCS→对端模块
-    drawSeg(mod2,tp,ELE,.045);           // 电段2：对端模块→芯片
+    /* 双铜缆分离：同面上 ICI 铜缆（深橙直连）与出框铜缆（亮橙弓形飞线）各一根，沿 fa 轴错层 */
+    const bulge=(a,b)=>{                       // 出框电段弓形（中段沿 fa 抬升 .45，与 ICI 直线分离）
+      const mid=a.clone().add(b).multiplyScalar(.5);
+      mid.setComponent(fa, mid.getComponent(fa)+.45);
+      const c=new THREE.QuadraticBezierCurve3(a,mid,b);
+      const pts=c.getPoints(14);
+      for(let k=0;k<pts.length-1;k++) g.add(fatLine(pts[k],pts[k+1],ELE,.03));
+    };
+    bulge(selfPos,mod1);                   // 电段1：芯片→本端面板专属模块（弓形，避让 ICI 铜缆）
+    drawFib(mod1,port1);                // 光纤1：模块→OCS 入口（绕回走外围大弧）
+    drawFib(port2,mod2);                // 光纤2：OCS 出口→对端模块（绕回同弧）
+    bulge(mod2,tp);                     // 电段2：对端模块→芯片（弓形）
     g.add(makeOpticalModule(mod1));
     g.add(makeOpticalModule(mod2));
     setRackStyle(tgt.r,tgt.s,tgt.t,'opt');
@@ -500,16 +821,25 @@ function showRackCard(r,s,t){
   document.getElementById('selhint').style.display='none';
   const card=document.getElementById('selcard');
   document.getElementById('seltitle').textContent=`机架 R(${r},${s},${t}) · Cube 层`;
-  document.getElementById('selbody').innerHTML=
-    `<h4>拓扑计算方式</h4>
-     机架坐标 (r,s,t) 每向 ±1 经 <span class="mono">mod 4</span> 环绕取邻居。柜内 64 颗 TPU = 4×4×4 芯片级环面（柜内全电）。出框端口 = 64 芯片 × 6 向 = <b style="color:#d85a30">384 个光端口 = 384 个 800G FR 光模块</b>（每芯片每向 1 个，黄色模块排即其实际阵列）。全 Pod 64 机架 × 384 = <b>24576 个光模块</b>（v7 口径仅 1.5 个/芯片）。<br>
-     <h4>连接方式（三段式）</h4>
-     每向 <b>64 条实际链路</b>（图中逐条画出）：<b style="color:#d85a30">电段</b>芯片→面板模块排 → <b style="color:#3266ad">光纤段</b>→ 本段唯一一台 OCS → <b style="color:#3266ad">光纤段</b>→ 对端模块排 → <b style="color:#d85a30">电段</b>→ 同槽位芯片。绕回长缆走<b>环外大弧</b>进环外 OCS（悬挑交换）。青架=对端；黄板上的 64 个小球=64 个光模块（8×8 阵列，与 64 芯片一一对应）；紫盒=途经 OCS。<br>
-     <h4>光模块型号</h4>
-     <b>800G OSFP FR（可插拔）</b>——8×100G PAM4，CWDM8 合波至单纤 LC，接入 OCS 端口；v9t 推演口径每芯片 6 个（7.2T=6×1.2T），后续或换 <b>2.4T OSFP（TFLN 薄膜铌酸锂调制器）</b>同位升级：OCS 对速率透明，模块换代不动 OCS 与光纤。
-     <h4>连接介质</h4>
-     电段：PCB/DAC；光段：800G FR 光模块（单纤 CWDM8）→ OCS 端口 → 对端，单链 1.2Tbps。绕回方向走长距光缆经 OCS。<br>
-     <b>下一步</b>：点击柜内 TPU 看逐条三段路径。`;
+  if(MODE==='3d'){
+    document.getElementById('selbody').innerHTML=
+      `<h4>拓扑计算方式（3D · v4/v7）</h4>
+       16×16×16 全局芯片环：每机架 4×4×4=64 卡仅是物理容器，逻辑坐标是全局 (X,Y,Z)∈[0,16)。跨机架的邻居借<b>面芯片</b>的模块出框——<b style="color:#d85a30">仅面/棱/角芯片有光模块</b>（均 1.5 个/芯片，全 Pod 6144 个），内部芯片全铜（DAC）。出框端口 = 6 面 × 16 模块 = <b>96 个/机架</b>。<br>
+       <h4>OCS：48 台全局配线架（轴×面槽位）</h4>
+       每轴 16 台（4×4 槽位），输入=全 Cluster 各 Cube 的 +面 (i,j) 槽芯片、输出=−面同槽（144×144 口，"+"面只能连"−"面）。跨机架光链经共享 OCS 转接——<b>这正是"逐跳爬边"的结构性根源</b>：内部芯片的跨架邻居须绕行面芯片的路由距离。<br>
+       <b>下一步</b>：点击柜内 TPU 看柜内铜 + 跨机架借面芯片的两类路径。`;
+  } else {
+    document.getElementById('selbody').innerHTML=
+      `<h4>拓扑计算方式</h4>
+       机架坐标 (r,s,t) 每向 ±1 经 <span class="mono">mod 4</span> 环绕取邻居。柜内 64 颗 TPU = 4×4×4 芯片级环面（柜内全电）。出框端口 = 64 芯片 × 6 向 = <b style="color:#d85a30">384 个光端口 = 384 个 800G FR 光模块</b>（每芯片每向 1 个，黄色模块排即其实际阵列）。全 Pod 64 机架 × 384 = <b>24576 个光模块</b>（v7 口径仅 1.5 个/芯片）。<br>
+       <h4>连接方式（三段式）</h4>
+       每向 <b>64 条实际链路</b>（图中逐条画出）：<b style="color:#ff8a3d">电段</b>每颗芯片直连自己面板上的专属模块（6D 出框权下放，<b>无逐跳借道</b>——与 v7 3D "内部芯片爬边借光模块" 的关键区别）→ <b style="color:#3266ad">光纤段</b>→ 本段唯一一台 OCS → <b style="color:#3266ad">光纤段</b>→ 对端模块排 → <b style="color:#ff8a3d">电段</b>→ 同槽位芯片。绕回长缆走<b>环外车道</b>进悬挑 OCS。青架=对端；黄板上的 64 个小球=64 个光模块（8×8 阵列，与 64 芯片一一对应）；紫盒=途经 OCS。<br>
+       <h4>光模块型号</h4>
+       <b>800G OSFP FR（可插拔）</b>——8×100G PAM4，CWDM8 合波至单纤 LC，接入 OCS 端口；v9t 推演口径每芯片 6 个（7.2T=6×1.2T），后续或换 <b>2.4T OSFP（TFLN 薄膜铌酸锂调制器）</b>同位升级：OCS 对速率透明，模块换代不动 OCS 与光纤。
+       <h4>连接介质</h4>
+       电段：PCB/DAC；光段：800G FR 光模块（单纤 CWDM8）→ OCS 端口 → 对端，单链 1.2Tbps。绕回方向走长距光缆经 OCS。<br>
+       <b>下一步</b>：点击柜内 TPU 看逐条三段路径。`;
+  }
   document.getElementById('seltable').innerHTML='';
   card.classList.add('show');
 }
@@ -520,11 +850,15 @@ function showChipCard(u,rows){
   const opW=rows.filter(r=>r.type==='op'&&r.wrap).length;
   document.getElementById('seltitle').textContent=`TPU (${u.x+1},${u.y+1},${u.z+1}) @ R(${u.r},${u.s},${u.t})`;
   document.getElementById('selbody').innerHTML=
-    `六元组地址 <span class="addr">(x,y,z | r,s,t) = (${u.x+1},${u.y+1},${u.z+1} | ${u.r},${u.s},${u.t})</span>，已隐藏所在机架外壳。12 条 ICI = 电绕回 ${cuW} + 电直连 ${6-cuW} + 光绕回 ${opW} + 光直达 ${6-opW}。
+    `六元组地址 <span class="addr">(x,y,z | r,s,t) = (${u.x+1},${u.y+1},${u.z+1} | ${u.r},${u.s},${u.t})</span>，已隐藏所在机架外壳。${MODE==='3d'
+      ? '6 条 ICI（全局 16 环）：柜内直连 + 跨机架借面芯片出框（光+OCS）。'
+      : `12 条 ICI = 电绕回 ${cuW} + 电直连 ${6-cuW} + 光绕回 ${opW} + 光直达 ${6-opW}。`}
      <h4>拓扑计算方式</h4>
-     环绕规则：邻居 = (坐标 ± 1) <span class="mono">mod 4</span>，柜内 与机架 坐标<b>各自独立环绕</b>——加 1 越过 3 回 0（绕回 ↺ 虚线），减 1 低于 0 到 3。全域 4⁶ = 4096 颗，直径 = 6 维 × 2 跳 = 12。
+     ${MODE==='3d'
+      ? '16×16×16 全局环：邻居 = (全局坐标 ± 1) mod 16。柜内直连 = 铜；跨机架 = 借<b>面芯片</b>的模块出框（面芯片 = 全局坐标 15→0 绕回边界上的芯片）。直径 = 3 维 × 8 跳 = <b>24 跳</b>——跨机架必逐格爬，正是 6D 要解决的结构性瓶颈。'
+      : '环绕规则：邻居 = (坐标 ± 1) <span class="mono">mod 4</span>，柜内 与机架 坐标<b>各自独立环绕</b>——加 1 越过 3 回 0（绕回 ↺ 虚线），减 1 低于 0 到 3。全域 4⁶ = 4096 颗，直径 = 6 维 × 2 跳 = 12。<b>绕回 ≠ 穿墙</b>：柜内绕回经面板光模块 + ICI 绕接缆走机架外侧（橙虚线），机架维绕回走环外车道长光缆经 OCS（蓝虚线弧）。'}
      <h4>连接方式</h4>
-     前 6 条（橙·纯电）：柜内芯片级 3D，±x/±y/±z 直连邻芯片，绕回横穿机架。后 6 条（三段式）：芯片 →<b style="color:#d85a30">[电·铜]</b>→ 光模块（黄球=光电转换）→<b style="color:#3266ad">[光纤]</b>→ OCS（紫八面体）→<b style="color:#3266ad">[光纤]</b>→ 对端光模块 →<b style="color:#d85a30">[电·铜]</b>→ 邻机架同槽位芯片。TPU 芯片本身不发光：信号以电形式出芯片，到面板光模块才转成光，全程"光只在两台光模块之间"。
+     前 6 条（<b style="color:#c2571f">深橙·柜内 IC</b> ±x/±y/±z）：直连邻居 = 铜直连（PCB/DAC），<b style="color:#0f8f8f">青块</b>即柜内对端芯片。绕回链路不横穿机架——信号出芯片走铜到<b>面板边缘光模块</b>（线延长到面板外，黄球即模块），经 <b>ICI 绕接缆</b>沿机架外侧绕到对面面板的光模块，再走铜进对端 TPU。后 6 条（三段式，<b style="color:#ff8a3d">亮橙</b>出框电段）：芯片 →<b style="color:#ff8a3d">[电·铜]</b>→ 光模块（黄球=光电转换）→<b style="color:#3266ad">[光纤]</b>→ OCS（紫八面体）→<b style="color:#3266ad">[光纤]</b>→ 对端光模块 →<b style="color:#ff8a3d">[电·铜]</b>→ 邻机架同槽位芯片（<b style="color:#0f8f8f">青色放大块</b>，已在对端 Cube 中画出）。TPU 芯片本身不发光：信号以电形式出芯片，到面板光模块才转成光，全程"光只在两台光模块之间"。
      <h4>连接介质</h4>
      电段：同托盘 PCB / 跨托盘 DAC，800Gbps。光段：800G FR 光模块（单纤 CWDM8）+ OCS 端口，1.2Tbps/条。合计 4.8T 电 + 7.2T 光 ≈ 3×2.4T 模块（推演口径）。<br>
      <b style="color:#0f6e56">模块归属（与 3D 的关键区别）</b>：6 条跨柜光链各配<b>专属光模块</b>——型号 <b>800G OSFP FR 可插拔</b>（8×100G PAM4 / CWDM8 单纤），每芯片 6 个、与链路一一对应，不借用边界芯片的模块——3D 时代只有 Cube 表面芯片有光模块（均 1.5 个/芯片），内部芯片出柜须逐跳爬到"同列最右边"的边界芯片借它的模块转光；6D 把出框权下放到每颗芯片，每列每颗芯片直接出框（每机架每向 64 模块、全架 384 个）。<br>
@@ -533,7 +867,7 @@ function showChipCard(u,rows){
   rows.forEach((row,i)=>{
     html+=`<tr>
       <td>${i+1}</td>
-      <td class="mono" style="font-weight:600;color:${row.type==='cu'?'#d85a30':'#3266ad'}">${row.dir}</td>
+      <td class="mono" style="font-weight:600;color:${row.type==='cu'?'#c2571f':'#3266ad'}">${row.dir}</td>
       <td class="mono">${row.calc}</td>
       <td>${row.nb}${row.ocs?`<br><span class="mono" style="color:#5b3fa0;font-size:10px">${row.ocs}</span>`:''}</td>
       <td><span class="tag ${row.type}">${row.media}</span></td>
@@ -541,13 +875,27 @@ function showChipCard(u,rows){
     </tr>`;
   });
   html+='</table>';
-  html+=`<p style="font-size:10.5px;color:var(--ink3);margin-top:6px;line-height:1.6;white-space:normal">橙线=电段（铜 · PCB/DAC）；蓝线=光段（光纤 · 经 OCS）；黄球=光模块（电↔光转换，唯一用球处）；紫八面体=本链路所属 OCS；虚线=绕回 ↺。</p>`;
+  html+=`<p style="font-size:10.5px;color:var(--ink3);margin-top:6px;line-height:1.6;white-space:normal">${MODE==='3d'
+    ? '深橙=柜内铜缆（直连）；亮橙=面芯片→模块电段；蓝线=光纤（模块→中央间隙走廊→层间隙 OCS，全程不穿机架）；黄球=光模块（仅面芯片有）；青色块=对端面芯片。'
+    : '深橙=柜内 IC 铜缆（逐跳）；亮橙=出框电段（芯片→面板模块）；蓝线=光段（光纤 · 经 OCS）；黄球=光模块（电↔光转换，唯一用球处）；紫八面体=本链路所属 OCS；青色放大块=对端 TPU（柜内邻芯片 / 相邻 Cube 同槽位）；虚线=绕回 ↺（柜内=ICI 绕接缆，机架维=环外长缆经 OCS）。'}</p>`;
   document.getElementById('seltable').innerHTML=html;
   card.classList.add('show');
 }
 function showOCSCard(ax,a,b,seg){
   document.getElementById('selhint').style.display='none';
   const card=document.getElementById('selcard');
+  if(MODE==='3d'){
+    document.getElementById('seltitle').textContent=`OCS ${ax.toUpperCase()} · 槽位(${a},${b}) · 全局共享配线架（3D）`;
+    document.getElementById('selbody').innerHTML=
+      `<h4>全局共享配线（文档口径）</h4>
+       OCS 按<b>轴 × 面槽位</b>编址：<b>OCS ${ax.toUpperCase()},${a},${b}</b> 输入侧 = 全 Cluster 64 个 Cube 的 ${ax.toUpperCase()}+ 面 <span class="mono">(${a},${b})</span> 槽芯片，输出侧 = 各 Cube 的 ${ax.toUpperCase()}− 面同槽芯片。MEMS 微镜把任意输入接到任意输出——<b>"+" 面永远连 "−" 面</b>（同侧不能互连，patch panel 约束）。<br>
+       <h4>端口账（实际量）</h4>
+       一台 = 1 个轴 × 1 个面槽位 = 64 Cube × 2 端 = <b>128 个 OCS 端口</b>。全 Pod = 3 轴 × 16 槽位 = <b>48 台</b>（144×144 口）。对比 6D 的 192 台——6D 每环绕段 1 台的专属配线，3D 是全局共享。<br>
+       图中：48 台 OCS 悬于机架层间隙（轴向=中央间隙、横向对齐机架格），光缆沿间隙走廊汇入。`;
+    document.getElementById('seltable').innerHTML='';
+    card.classList.add('show');
+    return;
+  }
   const fromR=seg, toR=wrap4(seg+1);
   document.getElementById('seltitle').textContent=`OCS · ${ax} 维环平面(${a},${b}) · 段 C${fromR}→C${toR}${seg===3?'（绕回）':''}`;
   document.getElementById('selbody').innerHTML=
@@ -572,7 +920,7 @@ function select(u){
   }
   if(u.type==='rack'){
     buildRackFocus(u.r,u.s,u.t);
-    buildIntra(u.r,u.s,u.t,true);
+    buildIntra(u.r,u.s,u.t,false);   // 不画柜内铜网格——6D 下每芯片直连出框，避免"逐跳爬边"误读
     setRackStyle(u.r,u.s,u.t,'hi');
     showRackCard(u.r,u.s,u.t);
   } else if(u.type==='chip'){
@@ -589,76 +937,6 @@ function select(u){
   }
 }
 
-/* ---------- 路由动画 ---------- */
-function route3D(src,dst){
-  const path=[]; const st={...src}; path.push({...st});
-  [['x','r'],['y','s'],['z','t']].forEach(([c,k])=>{
-    const g0=st[k]*4+st[c], g1=dst[k]*4+dst[c];
-    let delta=(g1-g0+16)%16;
-    const dir=delta<=8?1:-1;
-    const steps=dir===1?delta:16-delta;
-    for(let i=0;i<steps;i++){
-      let v=st[c]+dir;
-      if(v>3){v=0; st[k]=wrap4(st[k]+1);}
-      else if(v<0){v=3; st[k]=wrap4(st[k]-1);}
-      st[c]=v; path.push({...st});
-    }
-  });
-  return path;
-}
-function route6D(src,dst){
-  const path=[]; const st={...src}; path.push({...st});
-  ['x','y','z','r','s','t'].forEach(d=>{
-    const delta=(dst[d]-st[d]+4)%4;
-    const dir=delta<=2?1:-1;
-    const steps=dir===1?delta:4-delta;
-    for(let i=0;i<steps;i++){ st[d]=wrap4(st[d]+dir); path.push({...st}); }
-  });
-  return path;
-}
-const PAIRS={
-  A:{name:'对角线对', src:{x:0,y:0,z:0,r:0,s:0,t:0}, dst:{x:2,y:2,z:2,r:2,s:2,t:2}},
-  B:{name:'同槽位·机架+2对', src:{x:0,y:1,z:2,r:0,s:0,t:0}, dst:{x:0,y:1,z:2,r:2,s:2,t:2}}
-};
-let curPair='A';
-let anim=null;
-function stopAnim(){
-  if(anim){cancelAnimationFrame(anim.id); scene.remove(anim.grp); anim.grp.traverse(o=>{if(o.geometry)o.geometry.dispose();}); anim=null;}
-}
-function playPath(mode){
-  stopAnim();
-  const P=PAIRS[curPair];
-  const path=mode==='3d'?route3D(P.src,P.dst):route6D(P.src,P.dst);
-  const grp=new THREE.Group(); const spheres=[];
-  path.forEach(p=>{
-    const s=new THREE.Mesh(new THREE.SphereGeometry(.36,12,12), new THREE.MeshLambertMaterial({color:mode==='3d'?PATH3:PATH6}));
-    s.position.copy(chipWorld(p.x,p.y,p.z,p.r,p.s,p.t));
-    grp.add(s); spheres.push(s);
-  });
-  grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(path.map(p=>chipWorld(p.x,p.y,p.z,p.r,p.s,p.t))), new THREE.LineBasicMaterial({color:mode==='3d'?PATH3:PATH6})));
-  scene.add(grp);
-  const total=path.length-1; let hop=0, last=0;
-  const lab=document.getElementById('alab'), cnt=document.getElementById('acnt'), pb=document.getElementById('pbar');
-  const step=(now)=>{
-    if(now-last>170){
-      last=now;
-      spheres.forEach((s,i)=>s.visible=i<=hop);
-      pb.style.width=(hop/total*100)+'%';
-      cnt.textContent=`第 ${hop} / ${total} 跳`;
-      lab.textContent=(mode==='3d'?'3D 路径':'6D 路径')+' · '+P.name;
-      if(hop>=total){
-        document.getElementById('anote').innerHTML = mode==='3d'
-          ? `<b style="color:#185fa5">3D 到达：${total} 跳。</b>16 宽环每维最多半环 8 跳；跨机架只能沿芯片坐标逐格爬，经过的每个机架边界都是光+OCS 绕回。`
-          : `<b style="color:#d85a30">6D 到达：${total} 跳。</b>4 宽环每维半环仅 2 跳；机架维一跳跨一个机架（同槽位直连光链经 OCS），不必逐芯片爬。`;
-        return;
-      }
-      hop++;
-    }
-    anim.id=requestAnimationFrame(step);
-  };
-  anim={grp,id:null};
-  anim.id=requestAnimationFrame(step);
-}
 
 /* ---------- 拾取 ---------- */
 const ray=new THREE.Raycaster(), mouse=new THREE.Vector2();
@@ -702,19 +980,30 @@ window.__ocsList=ocsList;
 document.getElementById('btnRacks').onclick=()=>{ select(null); };
 document.getElementById('btnOpt').onclick=e=>{ buildOpt(e.target.classList.toggle('on')); };
 document.getElementById('btnOcs').onclick=e=>{ ocsGroup.visible=e.target.classList.toggle('on'); };
-document.getElementById('btnP3').onclick=e=>{e.target.classList.add('on'); document.getElementById('btnP6').classList.remove('on'); playPath('3d');};
-document.getElementById('btnP6').onclick=e=>{e.target.classList.add('on'); document.getElementById('btnP3').classList.remove('on'); playPath('6d');};
-document.getElementById('btnPairA').onclick=e=>{curPair='A'; e.target.classList.add('on'); document.getElementById('btnPairB').classList.remove('on'); stopAnim(); resetAnimBar();};
-document.getElementById('btnPairB').onclick=e=>{curPair='B'; e.target.classList.add('on'); document.getElementById('btnPairA').classList.remove('on'); stopAnim(); resetAnimBar();};
-function resetAnimBar(){
-  document.getElementById('alab').textContent='就绪';
-  document.getElementById('acnt').textContent='';
-  document.getElementById('pbar').style.width='0%';
+
+/* ---------- 模式切换 ---------- */
+function setMode(m){
+  if(MODE===m) return;
+  MODE=m;
+  select(null);                                        // 清聚焦/爆炸/全景
+  buildOpt(false);
+  buildOCSArray();                                     // 6D=192 段间 / 3D=48 环心
+  document.getElementById('subtitle').textContent=MODE_TEXT[m].sub;
+  document.getElementById('btnOcs').textContent=MODE_TEXT[m].ocsBtn;
+  document.getElementById('hint').textContent=MODE_TEXT[m].hint;
+  document.getElementById('btnMode3D').classList.toggle('on', m==='3d');
+  document.getElementById('btnMode6D').classList.toggle('on', m==='6d');
+  const btnOpt=document.getElementById('btnOpt');
+  if(m==='3d'){ btnOpt.classList.remove('on'); btnOpt.textContent='完整 Pod 绘制（4096 TPU + 全链路）'; }
+  else { btnOpt.classList.remove('on'); btnOpt.textContent='完整 Pod 绘制（4096 TPU + 全链路）'; }
+  auto=true;
 }
+document.getElementById('btnMode3D').onclick=()=>setMode('3d');
+document.getElementById('btnMode6D').onclick=()=>setMode('6d');
 
 /* ---------- 轨道 ---------- */
-let theta=Math.PI/5, phi=Math.PI/3.4, dist=52, auto=true;
-renderer.domElement.addEventListener('wheel',e=>{e.preventDefault(); dist=Math.max(10,Math.min(120,dist+e.deltaY*.03));},{passive:false});
+let theta=Math.PI/5, phi=Math.PI/3.4, dist=68, auto=true;
+renderer.domElement.addEventListener('wheel',e=>{e.preventDefault(); dist=Math.max(10,Math.min(160,dist+e.deltaY*.03));},{passive:false});
 function tick(){
   requestAnimationFrame(tick);
   if(auto&&!drag) theta+=.0016;

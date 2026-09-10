@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-5f5e5a.svg)](LICENSE)
 
-交互式技术图解合集——AI 互连、光通信、半导体方向的可视化讲解，纯静态、无构建、可离线运行。
+交互式技术图解合集——AI 互连、光通信、半导体方向的可视化讲解。
 
 
 ## 目录

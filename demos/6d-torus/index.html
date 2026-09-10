@@ -110,8 +110,27 @@
 <script type="importmap">
 { "imports": { "three": "./three.module.js" } }
 </script>
+<div id="fmErr" style="display:none; position:fixed; inset:0; z-index:999; background:#f7f7f5; padding:48px 32px; font-family:'Segoe UI','Microsoft YaHei',sans-serif; color:#26215c;">
+  <h2 style="font-size:18px; margin-bottom:14px;">需要通过 HTTP 访问（不要双击直接打开）</h2>
+  <p style="font-size:14px; line-height:1.9; color:#5f5e5a; max-width:640px;">
+    本页使用 ES Module（<code>import</code>）加载 three.js。浏览器安全策略禁止 <code>file://</code> 协议加载 module 文件，
+    所以双击打开会是空白。任选其一：
+  </p>
+  <ul style="font-size:14px; line-height:2.1; color:#5f5e5a; max-width:640px; margin-top:8px;">
+    <li>在仓库目录起本地服务：<code>python -m http.server 8000</code> → 访问 <code>http://localhost:8000/demos/6d-torus/</code></li>
+    <li>或 VS Code 装 Live Server 插件，右键 "Open with Live Server"</li>
+    <li>或访问部署后的 GitHub Pages 地址（https 协议，无此限制）</li>
+  </ul>
+</div>
+<script>
+/* file:// 检测：module 加载必失败，给出可见提示而非白屏 */
+if(location.protocol==='file:'){
+  document.addEventListener('DOMContentLoaded',()=>{ document.getElementById('fmErr').style.display='block'; });
+}
+</script>
 <script type="module">
 import * as THREE from 'three';
+window.__ok=true;   // module 加载成功标志（file:// 下不会执行到这里）
 
 const R=4, C=4;
 const SPACING_R=8.5, SPACING_C=1.55;   // 机架间距加大：壳 5.4 + 3.1 通道，容纳双方面板模块排与 OCS

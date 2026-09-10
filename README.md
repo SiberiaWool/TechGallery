@@ -4,7 +4,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-5f5e5a.svg)](LICENSE)
 
-交互式技术图解合集——AI 互连、光通信、半导体方向的可视化讲解。
+交互式技术图解合集——互连、光通信、存储、半导体等等的TMT板块可视化讲解。
+
+妈妈再也不用担心我的学习了！
 
 
 ## 目录

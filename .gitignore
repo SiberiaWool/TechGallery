@@ -10,3 +10,5 @@ desktop.ini
 .workbuddy/
 # ZCode 会话内部数据（不上传）
 .zcode/
+# Agent 指令文件（不入库）
+AGENTS.md

@@ -1,14 +1,11 @@
 # Tech Gallery · 技术图解馆
 
-![在线查看](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E6%9F%A5%E7%9C%8B-Tech%20Gallery-0f6e56?style=for-the-badge\&logo=github)
+[![在线查看](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E6%9F%A5%E7%9C%8B-Tech%20Gallery-0f6e56?style=for-the-badge\&logo=github)](https://siberiawool.github.io/TechGallery/)
 
-
-
-![License: MIT](https://img.shields.io/badge/License-MIT-5f5e5a.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-5f5e5a.svg)](LICENSE)
 
 交互式技术图解合集——AI 互连、光通信、半导体方向的可视化讲解，纯静态、无构建、可离线运行。
 
-> 点击上方「在线查看」直接体验渲染结果，无需下载。占位链接 `你的用户名` 替换为实际 GitHub 用户名即可。
 
 ## 目录
 
@@ -19,17 +16,17 @@
 ## 仓库结构
 
 ```
-tech-gallery/
-├── index.html      # 展馆主页（卡片目录 + 弹层预览，iframe 懒加载）
+TechGallery/
+├── index.html      # 展馆主页（卡片目录 + 弹层预览，REGISTRY 注册表在内）
 ├── favicon.svg
-├── .nojekyll       # 告诉 GitHub Pages 跳过 Jekyll，原样发布
+├── .nojekyll       # 原样发布
 ├── demos/
 │   └── 6d-torus/   # 每篇图解 = 一个自包含文件夹
 │       ├── index.html
 │       └── three.module.js   # three.js r160 本地副本（无 CDN 依赖）
 ├── .gitignore
 ├── LICENSE          # MIT
-└── README.md
+├── README.md
 ```
 
 ## 已知约定

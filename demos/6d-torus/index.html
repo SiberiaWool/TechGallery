@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-page-node-id="0yi1pnMVSY4pidbeXyo7fj">
-<head data-page-node-id="FktsjJ1F2Vuo2R3Fw4Vqbq">
-<meta charset="UTF-8" data-page-node-id="ZJrWE9JFbobRGDLw8glb6p">
-<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="vMBOP4f6dwfR4Fs939T5g6">
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <title>6D Torus 交互式 3D 演示 · TPU v9t（推演）</title>
 <style>
@@ -54,70 +54,70 @@
   .mono{font-family:Consolas,monospace;}
 </style>
 </head>
-<body data-page-node-id="fFiFehpu6LuAiaFBxfHM8G">
-<div id="app" data-page-node-id="pwAuYIm8uDwCdiGvcSz3hi">
-  <div id="stage" data-page-node-id="qNcgoN0AJeZ5VzaAtSEOUG">
-    <div id="title" data-page-node-id="4euEgWEKrM8FV2FfzMskq3"><h1 data-page-node-id="QJiKWwPu81rdPE7E94Ebiv">6D Torus 交互式 3D 演示</h1><p data-page-node-id="AqE3REZY5W5hqhpXfTC8Fn">TPU v9t 拓扑推演 · 4⁶ = 4096 卡 · 192 台 OCS 常驻（每环绕段 1 台）· 谷歌未官宣</p></div>
-    <div id="legend" data-page-node-id="cEFEAT0wd1upEEQHodyESy">
-      <b style="color:var(--ink)" data-page-node-id="ZaR20BYyHh60AOUI5UWbBI">图例</b><br data-page-node-id="UvDKbiuI4Xi46Qtq16ZJNN">
-      <span class="dot" style="background:#0f6e56" data-page-node-id="mT0yUAFqUdNj6bzqAe7FMv"></span>选中 TPU / 机架<br data-page-node-id="mjEphz6RZ3cQKIEOyHGCyl">
-      <span class="dot" style="background:#d85a30" data-page-node-id="MtEoigoCRLp91frerTkLaw"></span>电链路（铜 · PCB/DAC 电气信号）<br data-page-node-id="J2biPI0K7AoNBlgb8VzMFX">
-      <span class="dot" style="background:#3266ad" data-page-node-id="nAYS0KLKsCMN7oTjW26s4S"></span>光链路（光纤 · 经 OCS）<br data-page-node-id="K4ip7rLB6azHscfPx5oazG">
-      <span class="dot" style="background:#f0b429; border-radius:50%" data-page-node-id="feaDmxU1URLNI8qCADbQN1"></span>光模块（电↔光转换点）<br data-page-node-id="kPFHYYxyA3pGt4TLPGxs8V">
-      <span class="dot" style="background:#8d6bd6" data-page-node-id="GSCiHbMMqnBfwchCxKJYap"></span>OCS 交换机（常驻 192 台）<br data-page-node-id="2s5FBGW0eB1F3DA16lxNnw">
-      <span class="dot" style="background:#0f8f8f" data-page-node-id="vinjkaKVCtl2q1uWaUHrCl"></span>光链对端机架<br data-page-node-id="8L2lN9J2VIMrW9iQlyxRl7">
-      <span style="color:#185fa5" data-page-node-id="86yklYeOsuTEk9w93z21z3">— — 虚线 = torus 绕回 ↺</span>
+<body>
+<div id="app">
+  <div id="stage">
+    <div id="title"><h1>6D Torus 交互式 3D 演示</h1><p>TPU v9t 拓扑推演 · 4⁶ = 4096 卡 · 192 台 OCS 常驻（每环绕段 1 台）· 谷歌未官宣</p></div>
+    <div id="legend">
+      <b style="color:var(--ink)">图例</b><br>
+      <span class="dot" style="background:#0f6e56"></span>选中 TPU / 机架<br>
+      <span class="dot" style="background:#d85a30"></span>电链路（铜 · PCB/DAC 电气信号）<br>
+      <span class="dot" style="background:#3266ad"></span>光链路（光纤 · 经 OCS）<br>
+      <span class="dot" style="background:#f0b429; border-radius:50%"></span>光模块（电↔光转换点）<br>
+      <span class="dot" style="background:#8d6bd6"></span>OCS 交换机（常驻 192 台）<br>
+      <span class="dot" style="background:#0f8f8f"></span>光链对端机架<br>
+      <span style="color:#185fa5">— — 虚线 = torus 绕回 ↺</span>
     </div>
-    <div id="hint" data-page-node-id="n8fjPMOq09j5XE3Q9YYu0t">点击机架 → 6 向出框光束 + OCS；点击柜内 TPU → 隐藏外壳、12 条 ICI 三段式显示（芯片→光模块→OCS→对端）；点击 OCS 紫盒看其承载的环绕段与端口账；空白处退出</div>
+    <div id="hint">点击机架 → 6 向出框光束 + OCS；点击柜内 TPU → 隐藏外壳、12 条 ICI 三段式显示（芯片→光模块→OCS→对端）；点击 OCS 紫盒看其承载的环绕段与端口账；空白处退出</div>
   </div>
-  <div id="panel" data-page-node-id="vigWc3FZrGpawBwyIf5fm7">
-    <div id="info" data-page-node-id="FGWbO7NQyu8AH2DydjbowU">
-      <div class="sec" data-page-node-id="Xavpx9lKaUIwpA1KwM5SQr">
-        <h2 data-page-node-id="YvfPy13b0FFGXVBHJ1fOgq">结构分层</h2>
-        <div class="btnrow" data-page-node-id="27PGvNVzsjracAF1N1vPlM">
-          <button id="btnRacks" class="on" data-page-node-id="pE362IEm6kmWTwUG7Qv9wF">机架视图（退出聚焦）</button>
-          <button id="btnOpt" class="warn" data-page-node-id="WKup1UOJRPHRylVo6hfONJ">柜间光链全景</button>
-          <button id="btnOcs" class="amber on" data-page-node-id="D3erX84AkxMekJatRb2yp3">OCS 阵列（192 台）</button>
+  <div id="panel">
+    <div id="info">
+      <div class="sec">
+        <h2>结构分层</h2>
+        <div class="btnrow">
+          <button id="btnRacks" class="on">机架视图（退出聚焦）</button>
+          <button id="btnOpt" class="warn">柜间光链全景</button>
+          <button id="btnOcs" class="amber on">OCS 阵列（192 台）</button>
         </div>
-        <p class="note" data-page-node-id="rqcwdI5uHv6bG4NaKH153B"><b data-page-node-id="jppoLAzWDBwO45AH7kW0WN">OCS 阵列</b>常驻显示：每"环绕段"1 台（128 口）= 3 维 × 16 环平面 × 4 段 = 192 台（推演口径，v4 为 48 台 ×128 口）。台数随端口规格演进可折减：320 口 → 96 台，640+ 口 → 48 台。<b data-page-node-id="exJ6yHa5ZtNgxkbEayUEFq">柜间光链全景</b>：r 维全量 4096 条。聚焦时临时隐藏，退出恢复。</p>
+        <p class="note"><b>OCS 阵列</b>常驻显示：每"环绕段"1 台（128 口）= 3 维 × 16 环平面 × 4 段 = 192 台（推演口径，v4 为 48 台 ×128 口）。台数随端口规格演进可折减：320 口 → 96 台，640+ 口 → 48 台。<b>柜间光链全景</b>：r 维全量 4096 条。聚焦时临时隐藏，退出恢复。</p>
       </div>
-      <div class="sec" data-page-node-id="Tl3vJQSWOwMnCcRcNf8jFW">
-        <h2 data-page-node-id="AEWpMbTy6NEps8WlSWtdaz">3D vs 6D 路径对比动画</h2>
-        <div class="btnrow" style="margin-bottom:8px" data-page-node-id="WRrkk6JT8rY09HNK35vEfk">
-          <button id="btnPairA" class="on" data-page-node-id="ye1KUEdriqHZVbNnu7u4iq">对角线对（24 vs 12 跳）</button>
-          <button id="btnPairB" data-page-node-id="sfVOCHf3eE3Z0eRRfYkj26">同槽位·机架+2（24 vs 6 跳）</button>
+      <div class="sec">
+        <h2>3D vs 6D 路径对比动画</h2>
+        <div class="btnrow" style="margin-bottom:8px">
+          <button id="btnPairA" class="on">对角线对（24 vs 12 跳）</button>
+          <button id="btnPairB">同槽位·机架+2（24 vs 6 跳）</button>
         </div>
-        <div class="btnrow" data-page-node-id="DRhEDfU27leMduUqdmrqLd">
-          <button id="btnP3" class="blue" data-page-node-id="X4eICA2txOOtgp7M3O6Xcw">播放 3D 路径</button>
-          <button id="btnP6" class="warn on" data-page-node-id="FCvDQhyCJKVPLi8WG3NZh6">播放 6D 路径</button>
+        <div class="btnrow">
+          <button id="btnP3" class="blue">播放 3D 路径</button>
+          <button id="btnP6" class="warn on">播放 6D 路径</button>
         </div>
-        <div id="animbar" style="margin-top:10px; border:1px solid var(--line); border-radius:10px; padding:10px 12px;" data-page-node-id="D8ru8fAnEWGBYzhC3SH7JJ">
-          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--ink3); margin-bottom:4px;" data-page-node-id="CaaClbglsWbkmujQYgNt3M"><span id="alab" data-page-node-id="rGd9EjD1ePtvonLRq6LAt4">就绪</span><span id="acnt" data-page-node-id="cEJobR70D6jJxxHgBFHlQ3"></span></div>
-          <div id="progress" data-page-node-id="0Qf3rWDVFb4jJll4tNrpHb"><div id="pbar" data-page-node-id="7ovyR5T5NE13F8Tf4Qc77c"></div></div>
-          <p class="note" id="anote" style="margin-top:8px" data-page-node-id="hYcCpQL0QBH6QUD5ftQvmc">同槽位对最能体现差异：源与目的柜内坐标完全相同、只差机架号——3D 必须沿芯片坐标逐格爬 24 跳；6D 沿机架维每跳跨一个机架（同槽位直连光链），6 跳直达。均为逐维最短环路路由。</p>
+        <div id="animbar" style="margin-top:10px; border:1px solid var(--line); border-radius:10px; padding:10px 12px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--ink3); margin-bottom:4px;"><span id="alab">就绪</span><span id="acnt"></span></div>
+          <div id="progress"><div id="pbar"></div></div>
+          <p class="note" id="anote" style="margin-top:8px">同槽位对最能体现差异：源与目的柜内坐标完全相同、只差机架号——3D 必须沿芯片坐标逐格爬 24 跳；6D 沿机架维每跳跨一个机架（同槽位直连光链），6 跳直达。均为逐维最短环路路由。</p>
         </div>
       </div>
-      <div class="sec" data-page-node-id="u7t0ydj07cTpEYIy5YHArI">
-        <h2 data-page-node-id="kmfgh4KWqooISKateasRIs">参数速览</h2>
-        <table data-page-node-id="GhVtPfbSRPW7QNPvX8srTa">
-          <tr data-page-node-id="J7Xd7KwTPvmEjp1N51Nbvg"><th data-page-node-id="wfB8h4gueZgfJaauRaN6FC"></th><th data-page-node-id="osJXE2axdvIssAWt5xQ7r5">3D Torus（v4/v7）</th><th data-page-node-id="JBCPvAjDX3p6EkkjDCmRDo">6D Torus（v9t 传）</th></tr>
-          <tr data-page-node-id="ttcEF3J2ojqjtIAR90OEJc"><td class="em" data-page-node-id="RUDoE1hhHvg0VD8EKO3qXD">拓扑</td><td data-page-node-id="FVzziCqtg78wgFcqTimT1P">16×16×16</td><td data-page-node-id="EVQEObBvzzRqYow33Xc7km">4×4×4×4×4×4</td></tr>
-          <tr data-page-node-id="L5iqqdJtDIuOrwDQfjCLRk"><td class="em" data-page-node-id="nckAdik4L0U3CEEpjXwzda">每芯片 ICI</td><td data-page-node-id="dVO0OMT2qJwGlgJ9brH9Iw">6 条</td><td style="color:var(--teal);font-weight:600" data-page-node-id="bSsnrGnk80rv3Q5QGMyjpP">12 条</td></tr>
-          <tr data-page-node-id="5UiyBpS90oZSEDa068uJDP"><td class="em" data-page-node-id="DARqLh6Mh6y7HUsZLzyaDJ">网络直径</td><td data-page-node-id="hhCBrAv6LOpvrei3s34p8Q">24 跳</td><td style="color:var(--teal);font-weight:600" data-page-node-id="W0Fr11Byi2Wl6XxgEVd38V">12 跳</td></tr>
-          <tr data-page-node-id="T81oqovzsqORtmlmHCZmwH"><td class="em" data-page-node-id="SzbdgzMBhinYheASlAxiGW">每机架出框光</td><td data-page-node-id="gcqfGSGa930511HqWzfQsv">96 条</td><td style="color:var(--coral);font-weight:600" data-page-node-id="9LT2V9mK2rFoxWzKsziuet">384 端口（64×6）</td></tr>
-          <tr data-page-node-id="jJcuJhpK2BScK9KNEDqe4L"><td class="em" data-page-node-id="t1IouKYLWUOXUWgsecMH1H">OCS 端口配比</td><td data-page-node-id="1maMF8Whxc19vPOFKFGBKA">1:1.5</td><td style="color:var(--coral);font-weight:600" data-page-node-id="XnlpOiyeNtn2yJKKdU7myk">1:6（×4）</td></tr>
-          <tr data-page-node-id="qXFygHCvDZS3E6OlwmxWiY"><td class="em" data-page-node-id="CvalyPE0dJlhBqRgIeUBv8">二分带宽</td><td data-page-node-id="9h7B3o8qHZXlUGnzTXgXth">基准</td><td style="color:var(--teal);font-weight:600" data-page-node-id="wcamElAhAVlFaEjxmVhZTN">×4</td></tr>
+      <div class="sec">
+        <h2>参数速览</h2>
+        <table>
+          <tr><th></th><th>3D Torus（v4/v7）</th><th>6D Torus（v9t 传）</th></tr>
+          <tr><td class="em">拓扑</td><td>16×16×16</td><td>4×4×4×4×4×4</td></tr>
+          <tr><td class="em">每芯片 ICI</td><td>6 条</td><td style="color:var(--teal);font-weight:600">12 条</td></tr>
+          <tr><td class="em">网络直径</td><td>24 跳</td><td style="color:var(--teal);font-weight:600">12 跳</td></tr>
+          <tr><td class="em">每机架出框光</td><td>96 条</td><td style="color:var(--coral);font-weight:600">384 端口（64×6）</td></tr>
+          <tr><td class="em">OCS 端口配比</td><td>1:1.5</td><td style="color:var(--coral);font-weight:600">1:6（×4）</td></tr>
+          <tr><td class="em">二分带宽</td><td>基准</td><td style="color:var(--teal);font-weight:600">×4</td></tr>
         </table>
-        <p class="note" data-page-node-id="ZC2lZr12bCjtESBlTas8jg">口径注：×4 为 SemiAnalysis OCS 端口口径；国内卖方按 2.4T 模块折算配比 ×2、800G 当量 ×5–6。直径=最坏端点对跳数；环距=环长一半（16 环→8 跳/维，4 环→2 跳/维）。</p>
+        <p class="note">口径注：×4 为 SemiAnalysis OCS 端口口径；国内卖方按 2.4T 模块折算配比 ×2、800G 当量 ×5–6。直径=最坏端点对跳数；环距=环长一半（16 环→8 跳/维，4 环→2 跳/维）。</p>
       </div>
-      <div class="sec" style="border-bottom:none" data-page-node-id="CcVSVrHFzZceymMyFOYjtm">
-        <h2 data-page-node-id="TUIohIRBq5mib9BQBTsXkr">选中详情</h2>
-        <div id="selcard" data-page-node-id="kmlQY5YAkybETXVALrSWHS">
-          <h3 id="seltitle" data-page-node-id="7dLSzdpcYnENldVFgUZEXk">—</h3>
-          <p id="selbody" data-page-node-id="5N9LKUWmVfm5liAPcVKv9e">—</p>
-          <div id="seltable" data-page-node-id="POAAJug2gVAbUPgdCdjGpD"></div>
+      <div class="sec" style="border-bottom:none">
+        <h2>选中详情</h2>
+        <div id="selcard">
+          <h3 id="seltitle">—</h3>
+          <p id="selbody">—</p>
+          <div id="seltable"></div>
         </div>
-        <p class="note" id="selhint" style="margin-top:8px" data-page-node-id="AK9k39lCOp5bYY3YpHrF3c">尚未选中：点击机架 / 柜内 TPU / 紫色 OCS 盒体，此处展开拓扑计算、连接方式与介质明细。</p>
+        <p class="note" id="selhint" style="margin-top:8px">尚未选中：点击机架 / 柜内 TPU / 紫色 OCS 盒体，此处展开拓扑计算、连接方式与介质明细。</p>
       </div>
     </div>
   </div>

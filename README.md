@@ -11,7 +11,8 @@
 
 | 图解                                              | 分类          | 简介                                                                  |
 | ----------------------------------------------- | ----------- | ------------------------------------------------------------------- |
-| [6D Torus 交互式 3D 演示](demos/6d-torus/index.html) | AI 互连 · 光通信 | Google TPU v9t 拓扑推演：64 机架全量渲染、12 条 ICI 电光分段、192 台 OCS、3D vs 6D 路径动画 |
+| [6D Torus 交互式 3D 演示](https://siberiawool.github.io/TechGallery/demos/6d-torus/index.html) | AI 互连 · 光通信 | Google TPU v9t 拓扑推演：64 机架全量渲染、12 条 ICI 电光分段、192 台 OCS、3D vs 6D 路径动画 |
+| [可插拔、NPO、CPO结构图示](https://siberiawool.github.io/TechGallery/demos/cpo-evolution/index.html) | 光通信 · 光模块 | 光引擎位置演进：可插拔 → NPO → CPO，同一交换机主板视角下的三种光互连架构对比，含演进总览、9 维度对照表与三张同视角剖面结构图 |
 
 ## 仓库结构
 
@@ -21,9 +22,12 @@ TechGallery/
 ├── favicon.svg
 ├── .nojekyll       # 原样发布
 ├── demos/
-│   └── 6d-torus/   # 每篇图解 = 一个自包含文件夹
+│   ├── 6d-torus/   # 每篇图解 = 一个自包含文件夹
+│   │   ├── index.html
+│   │   └── three.module.js   # three.js r160 本地副本（无 CDN 依赖）
+│   └── cpo-evolution/
 │       ├── index.html
-│       └── three.module.js   # three.js r160 本地副本（无 CDN 依赖）
+│       └── svg/   # 三张结构图（可插拔 / NPO / CPO）
 ├── .gitignore
 ├── LICENSE          # MIT
 ├── README.md

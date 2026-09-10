@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>光引擎位置演进 · 可插拔 → NPO → CPO</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#26215c; --ink2:#5f5e5a; --ink3:#888780;
+    --line:#d3d1c7; --teal:#0f6e56; --teal-l:#e1f5ee; --coral:#d85a30; --blue:#185fa5; --blue-l:#e6f1fb;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink);}
+  header{background:var(--panel); border-bottom:1px solid var(--line); padding:26px 36px 20px;}
+  header h1{font-size:20px; font-weight:600; letter-spacing:.5px;}
+  header p{font-size:13px; color:var(--ink2); margin-top:6px; line-height:1.7; max-width:1100px;}
+  header .tags{margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{font-size:11px; color:var(--ink3); border:1px solid var(--line); border-radius:12px; padding:2px 10px;}
+  main{max-width:1240px; margin:0 auto; padding:26px 36px 60px;}
+
+  /* 演进总览条 */
+  #evolution{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 24px; margin-bottom:26px;}
+  #evolution h2{font-size:15px; font-weight:600; margin-bottom:14px;}
+  #evo-track{display:flex; align-items:stretch; gap:0;}
+  .evo-node{flex:1; text-align:center; position:relative; padding:14px 10px 12px; border-radius:10px; cursor:pointer; transition:background .15s;}
+  .evo-node:hover{background:var(--bg);}
+  .evo-node.active{outline:2px solid var(--teal); outline-offset:-2px;}
+  .evo-node .stage{font-size:11px; color:var(--ink3); letter-spacing:1px;}
+  .evo-node .name{font-size:15px; font-weight:600; margin-top:2px;}
+  .evo-node .sub{font-size:11px; color:var(--ink2); margin-top:4px; line-height:1.6;}
+  .evo-arrow{display:flex; align-items:center; justify-content:center; width:56px; color:var(--ink3); font-size:18px;}
+  .evo-metric{display:flex; justify-content:space-between; margin-top:16px; border-top:1px dashed var(--line); padding-top:12px;}
+  .evo-metric .m{flex:1; text-align:center;}
+  .evo-metric .m .k{font-size:11px; color:var(--ink3);}
+  .evo-metric .m .v{font-size:13px; font-weight:600; margin-top:2px;}
+  .evo-metric .m .v.red{color:var(--coral);} .evo-metric .m .v.green{color:var(--teal);} .evo-metric .m .v.blue{color:var(--blue);}
+
+  /* 对比表 */
+  #compare{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 24px; margin-bottom:26px; overflow-x:auto;}
+  #compare h2{font-size:15px; font-weight:600; margin-bottom:14px;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th,td{padding:9px 12px; text-align:left; border-bottom:1px solid var(--line); line-height:1.6; vertical-align:top;}
+  th{font-size:12px; color:var(--ink2); font-weight:600; background:var(--bg); white-space:nowrap;}
+  td:first-child{color:var(--ink2); white-space:nowrap;}
+  td.best{color:var(--teal); font-weight:600;}
+  td.worst{color:var(--coral); font-weight:600;}
+
+  /* SVG 图卡 */
+  .figure{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px 26px 18px; margin-bottom:26px;}
+  .figure h2{font-size:15px; font-weight:600;}
+  .figure .note{font-size:12.5px; color:var(--ink2); line-height:1.7; margin:6px 0 14px;}
+  .figure .note b{color:var(--ink); font-weight:600;}
+  .figure object{display:block; width:100%; height:auto;}
+  .figure .legend{font-size:11.5px; color:var(--ink3); border-top:1px dashed var(--line); padding-top:10px; margin-top:14px; line-height:1.8;}
+  .dot{display:inline-block; width:10px; height:10px; border-radius:2px; vertical-align:middle; margin:0 4px 0 10px;}
+
+  footer{max-width:1240px; margin:0 auto; padding:0 36px 40px; font-size:12px; color:var(--ink3); line-height:1.8;}
+</style>
+</head>
+<body>
+<header>
+  <h1>光引擎位置演进 · 可插拔光模块 → NPO → CPO</h1>
+  <p>同一交换机主板视角下的三种光互连架构：光引擎（OE）从面板侧可插拔模块，逐步迁移至 ASIC 近旁（NPO）、最终进入 ASIC 封装体内部（CPO）。电通道每一次缩短，都换来功耗、密度与可维修性之间的重新权衡。三图同视角、同比例语义，可直接对照。</p>
+  <div class="tags">
+    <span class="chip">光通信 · 光模块</span>
+    <span class="chip">NPO / CPO</span>
+    <span class="chip">侧视剖面 · 同视角对比</span>
+    <span class="chip">2026-09-10</span>
+  </div>
+</header>
+<main>
+
+  <section id="evolution">
+    <h2>演进主线：光引擎向芯片靠近</h2>
+    <div id="evo-track">
+      <div class="evo-node" data-target="fig1">
+        <div class="stage">STAGE 1</div>
+        <div class="name">可插拔光模块</div>
+        <div class="sub">QSFP-DD / OSFP<br>笼子 + 金手指</div>
+      </div>
+      <div class="evo-arrow">→</div>
+      <div class="evo-node" data-target="fig2">
+        <div class="stage">STAGE 2</div>
+        <div class="name">NPO 近封装</div>
+        <div class="sub">OE 独立封装贴装<br>ASIC 旁 · 可测可换</div>
+      </div>
+      <div class="evo-arrow">→</div>
+      <div class="evo-node" data-target="fig3">
+        <div class="stage">STAGE 3</div>
+        <div class="name">CPO 共封装</div>
+        <div class="sub">OE 与 ASIC 同封装体<br>电通道 &lt;10mm</div>
+      </div>
+    </div>
+    <div class="evo-metric">
+      <div class="m"><div class="k">224G 电通道</div><div class="v red">数十 cm 级</div></div>
+      <div class="m"><div class="k">→</div><div class="v">&lt;50mm</div></div>
+      <div class="m"><div class="k">→</div><div class="v green">&lt;10mm</div></div>
+      <div class="m"><div class="k">单端口功耗相对水平</div><div class="v red">1.0（基线，含 DSP）</div></div>
+      <div class="m"><div class="k">→</div><div class="v">约 1/3</div></div>
+      <div class="m"><div class="k">→</div><div class="v green">约 1/4-1/5</div></div>
+      <div class="m"><div class="k">维修模型</div><div class="v green">热插拔即换</div></div>
+      <div class="m"><div class="k">→</div><div class="v">换单颗 OE</div></div>
+      <div class="m"><div class="k">→</div><div class="v red">换整个封装体</div></div>
+    </div>
+  </section>
+
+  <section id="compare">
+    <h2>三架构关键维度对照</h2>
+    <table>
+      <thead><tr><th>维度</th><th>① 可插拔光模块</th><th>② NPO 近封装</th><th>③ CPO 共封装</th></tr></thead>
+      <tbody>
+        <tr><td>光引擎位置</td><td>面板笼内独立模块</td><td>ASIC 旁独立封装，同板</td><td>ASIC 同一封装体内</td></tr>
+        <tr><td>224G 电通道</td><td class="worst">数十 cm（过背板/连接器）</td><td>&lt;50mm</td><td class="best">&lt;10mm</td></tr>
+        <tr><td>DSP 重定时</td><td class="worst">需要（功耗 ~1/3-1/2）</td><td>可省（LPO 化近封装）</td><td class="best">不需要</td></tr>
+        <tr><td>光源</td><td>模块内 EML+TEC 蝶形</td><td>ELSFP 外置 CW 阵列</td><td>ELSFP 外置 CW 阵列</td></tr>
+        <tr><td>可维修性</td><td class="best">热插拔即换</td><td>可换单颗 OE（料站返修）</td><td class="worst">换整个封装体 / 靠冗余</td></tr>
+        <tr><td>良率模型</td><td class="best">模块级独立筛测</td><td>OE 独立筛测，良率隔离</td><td class="worst">KGD 全检，良率乘法复合</td></tr>
+        <tr><td>散热</td><td>模块风冷（224G 逼近极限）</td><td>板级散热器</td><td>集成冷板液冷</td></tr>
+        <tr><td>面板密度</td><td class="worst">受光口尺寸限制（1U 64 口上限）</td><td>MPO 面板，密度高</td><td class="best">边缘出纤，密度最高</td></tr>
+        <tr><td>当前状态</td><td>规模商用（800G/1.6T）</td><td>工程化过渡（出样 → 小批量）</td><td>头部厂商旗舰导入（NV 2026 等）</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="figure" id="fig1">
+    <h2>① 可插拔光模块 · 板级结构剖面</h2>
+    <div class="note"><b>基线架构</b>：光模块以金手指插入面板侧笼子，模块内自含 DSP、EML TOSA、PD 阵列与 TEC。电通道长达数十 cm，靠 DSP 重定时保信号完整性——这是功耗的主要来源，也是 NPO/CPO 要消灭的对象。光源封装在模块内部，与后两者外置 ELSFP 的供光架构根本不同。</div>
+    <object type="image/svg+xml" data="svg/结构图1_可插拔光模块.svg" aria-label="可插拔光模块结构剖面图"></object>
+    <div class="legend">
+      红虚线=模块内光路<span class="dot" style="background:#888780"></span>灰实线=数据光纤<span class="dot" style="background:#BA7517"></span>橙粗线=224G 电通道<span class="dot" style="background:#FAC775"></span>金手指/射频<span class="dot" style="background:#E6F1FB;border:1px solid #185FA5"></span>TEC/热管理
+    </div>
+  </section>
+
+  <section class="figure" id="fig2">
+    <h2>② NPO · 板级近封装光学结构剖面</h2>
+    <div class="note"><b>过渡架构</b>：光引擎（EIC + 硅光 PIC + 高通道 FAU）做成独立封装，贴装在 ASIC 两侧，224G 电通道压到 50mm 以内，DSP 可省。光源外置 ELSFP，经保偏光纤供 CW 连续光。板内光纤绕行是 NPO 的工程代价；换来的是 OE 可独立测试、可单独更换——良率隔离与维修弹性保留。</div>
+    <object type="image/svg+xml" data="svg/结构图2_NPO近封装.svg" aria-label="NPO 板级近封装结构剖面图"></object>
+    <div class="legend">
+      红虚线=供光光路<span class="dot" style="background:#888780"></span>灰实线=数据光纤<span class="dot" style="background:#BA7517"></span>橙粗线=224G 电通道<span class="dot" style="background:#9FE1CB"></span>光引擎/PIC/供光模组
+    </div>
+  </section>
+
+  <section class="figure" id="fig3">
+    <h2>③ CPO · 共封装光学结构剖面</h2>
+    <div class="note"><b>终局形态</b>：OE 与交换 ASIC 封装在同一封装体内，电通道 &lt;10mm，功耗与密度最优。代价是失效模型改变：OE 不可独立更换（维修=换整个封装体），需 Known Good Die 全检、良率乘法复合；散热升级为集成冷板液冷。光源仍外置 ELSFP——「CPO 不可修」的流行说法过强，光源层面两架构无差异，真实差异在芯片级与互连级检修复杂度。</div>
+    <object type="image/svg+xml" data="svg/结构图3_CPO共封装.svg" aria-label="CPO 共封装结构剖面图"></object>
+    <div class="legend">
+      红虚线=CW 供光<span class="dot" style="background:#888780"></span>灰实线=数据光纤<span class="dot" style="background:#BA7517"></span>橙粗线=224G 电通道<span class="dot" style="background:#9FE1CB"></span>OE/PIC/光源环节
+    </div>
+  </section>
+
+</main>
+<footer>
+  口径说明：结构为公开资料整理的技术推演（中泰《光学向芯片靠近》、NV 官宣新闻稿、OFC 2024-25、LightCounting），未按比例；功耗/通道数据为行业公开区间，不构成投资建议。<br>
+  本页为 TechGallery 图解，自包含单文件、可离线运行 · 2026-09-10
+</footer>
+<script>
+document.querySelectorAll('.evo-node').forEach(n=>{
+  n.addEventListener('click',()=>{
+    document.querySelectorAll('.evo-node').forEach(x=>x.classList.remove('active'));
+    n.classList.add('active');
+    document.getElementById(n.dataset.target).scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+</script>
+</body>
+</html>
